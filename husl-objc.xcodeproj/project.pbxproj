@@ -1,0 +1,377 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DB9445681B208E670060C49C /* husl_objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB9445671B208E670060C49C /* husl_objc.h */; };
+		DB94456A1B208E680060C49C /* husl_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9445691B208E680060C49C /* husl_objc.m */; };
+		DB9445701B208E680060C49C /* libhusl-objc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9445641B208E670060C49C /* libhusl-objc.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DB9445711B208E680060C49C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DB94455C1B208E670060C49C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DB9445631B208E670060C49C;
+			remoteInfo = "husl-objc";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DB9445621B208E670060C49C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				DB9445681B208E670060C49C /* husl_objc.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		DB9445641B208E670060C49C /* libhusl-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libhusl-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB9445671B208E670060C49C /* husl_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = husl_objc.h; sourceTree = "<group>"; };
+		DB9445691B208E680060C49C /* husl_objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = husl_objc.m; sourceTree = "<group>"; };
+		DB94456F1B208E680060C49C /* husl-objcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "husl-objcTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB9445751B208E680060C49C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DB9445611B208E670060C49C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DB94456C1B208E680060C49C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB9445701B208E680060C49C /* libhusl-objc.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DB94455B1B208E670060C49C = {
+			isa = PBXGroup;
+			children = (
+				DB9445661B208E670060C49C /* husl-objc */,
+				DB9445731B208E680060C49C /* husl-objcTests */,
+				DB9445651B208E670060C49C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DB9445651B208E670060C49C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DB9445641B208E670060C49C /* libhusl-objc.a */,
+				DB94456F1B208E680060C49C /* husl-objcTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB9445661B208E670060C49C /* husl-objc */ = {
+			isa = PBXGroup;
+			children = (
+				DB9445671B208E670060C49C /* husl_objc.h */,
+				DB9445691B208E680060C49C /* husl_objc.m */,
+			);
+			path = "husl-objc";
+			sourceTree = "<group>";
+		};
+		DB9445731B208E680060C49C /* husl-objcTests */ = {
+			isa = PBXGroup;
+			children = (
+				DB9445741B208E680060C49C /* Supporting Files */,
+			);
+			path = "husl-objcTests";
+			sourceTree = "<group>";
+		};
+		DB9445741B208E680060C49C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DB9445751B208E680060C49C /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DB9445631B208E670060C49C /* husl-objc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DB9445781B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objc" */;
+			buildPhases = (
+				DB9445601B208E670060C49C /* Sources */,
+				DB9445611B208E670060C49C /* Frameworks */,
+				DB9445621B208E670060C49C /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "husl-objc";
+			productName = "husl-objc";
+			productReference = DB9445641B208E670060C49C /* libhusl-objc.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		DB94456E1B208E680060C49C /* husl-objcTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DB94457B1B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objcTests" */;
+			buildPhases = (
+				DB94456B1B208E680060C49C /* Sources */,
+				DB94456C1B208E680060C49C /* Frameworks */,
+				DB94456D1B208E680060C49C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DB9445721B208E680060C49C /* PBXTargetDependency */,
+			);
+			name = "husl-objcTests";
+			productName = "husl-objcTests";
+			productReference = DB94456F1B208E680060C49C /* husl-objcTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DB94455C1B208E670060C49C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Roger Tallada";
+				TargetAttributes = {
+					DB9445631B208E670060C49C = {
+						CreatedOnToolsVersion = 6.3.2;
+					};
+					DB94456E1B208E680060C49C = {
+						CreatedOnToolsVersion = 6.3.2;
+					};
+				};
+			};
+			buildConfigurationList = DB94455F1B208E670060C49C /* Build configuration list for PBXProject "husl-objc" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DB94455B1B208E670060C49C;
+			productRefGroup = DB9445651B208E670060C49C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DB9445631B208E670060C49C /* husl-objc */,
+				DB94456E1B208E680060C49C /* husl-objcTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DB94456D1B208E680060C49C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DB9445601B208E670060C49C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB94456A1B208E680060C49C /* husl_objc.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DB94456B1B208E680060C49C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DB9445721B208E680060C49C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DB9445631B208E670060C49C /* husl-objc */;
+			targetProxy = DB9445711B208E680060C49C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		DB9445761B208E680060C49C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		DB9445771B208E680060C49C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DB9445791B208E680060C49C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		DB94457A1B208E680060C49C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		DB94457C1B208E680060C49C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "husl-objcTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		DB94457D1B208E680060C49C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "husl-objcTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DB94455F1B208E670060C49C /* Build configuration list for PBXProject "husl-objc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB9445761B208E680060C49C /* Debug */,
+				DB9445771B208E680060C49C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DB9445781B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB9445791B208E680060C49C /* Debug */,
+				DB94457A1B208E680060C49C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		DB94457B1B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objcTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB94457C1B208E680060C49C /* Debug */,
+				DB94457D1B208E680060C49C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DB94455C1B208E670060C49C /* Project object */;
+}
