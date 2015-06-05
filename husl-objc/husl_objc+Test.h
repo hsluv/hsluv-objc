@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Roger Tallada. All rights reserved.
 //
 
-#import "husl_objc.h"
-
 #ifndef husl_objc_husl_objc_Test_h
 #define husl_objc_husl_objc_Test_h
 

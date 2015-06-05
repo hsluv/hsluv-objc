@@ -9,6 +9,7 @@
 
 
 #import <tgmath.h>
+#import "husl_objc.h"
 #import "husl_objc+Test.h"
 
 #pragma mark Private funcions
