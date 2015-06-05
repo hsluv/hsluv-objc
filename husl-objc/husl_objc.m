@@ -5,11 +5,13 @@
 //  Created by Roger on 4/6/15.
 //  Copyright (c) 2015 Roger Tallada. All rights reserved.
 //
+// Implementation of husl translated from husl.coffee
+
 
 #import <tgmath.h>
-#import "husl_objc.h"
+#import "husl_objc+Test.h"
 
-#pragma mark Private funcions, the actual implementation of husl translated from husl.coffee
+#pragma mark Private funcions
 
 /*
  # The math for most of this module was taken from:
@@ -52,8 +54,8 @@ CGFloat epsilon = 0.0088564516;
 
 void setM() {
     if (!m) {
-        m = @[@[@3.240969941904521, @-1.537383177570093, @-0.498610760293],      //R
-              @[@-0.96924363628087, @1.87596750150772, @0.041555057407175],   //G
+        m = @[@[@3.240969941904521, @-1.537383177570093, @-0.498610760293], //R
+              @[@-0.96924363628087, @1.87596750150772, @0.041555057407175], //G
               @[@0.055630079696993, @-0.20397695888897, @1.056971514242878]]; //B
     }
 }
@@ -65,6 +67,7 @@ void setM_inv() {
                   @[@0.019330818715591, @0.11919477979462, @0.95053215224966]]; //Z
     }
 }
+
 // For a given lightness, return a list of 6 lines in slope-intercept
 // form that represent the bounds in CIELUV, stepping over which will
 // push a value out of the RGB gamut
@@ -294,6 +297,48 @@ Tuple lchToLuv(Tuple lch) {
     return luv;
 }
 
+// Rounds number to a given number of decimal places
+CGFloat roundPlaces(CGFloat num, NSUInteger places) {
+    CGFloat n = pow(10, places);
+    return round(num * n) / n;
+}
+
+CGFloat checkBorders(CGFloat channel) {
+    if (channel < 0) {
+        return 0;
+    }
+    if (channel > 1) {
+        return 1;
+    }
+    return channel;
+}
+
+// Represents rgb [0-1] values as [0-255] values. Errors out if value
+// out of the range
+Tuple rgbPrepare(Tuple tuple) {
+    tuple.a = roundPlaces(tuple.a, 3);
+    tuple.b = roundPlaces(tuple.b, 3);
+    tuple.c = roundPlaces(tuple.c, 3);
+    
+    if (tuple.a < -0.0001 || tuple.a > 1.0001 ||
+        tuple.b < -0.0001 || tuple.b > 1.0001 ||
+        tuple.c < -0.0001 || tuple.c > 1.0001) {
+        @throw @"Illegal rgb value";
+    }
+    
+    tuple.a = round(255*checkBorders(tuple.a));
+    tuple.b = round(255*checkBorders(tuple.b));
+    tuple.c = round(255*checkBorders(tuple.c));
+    
+    return tuple;
+}
+
+BOOL hexToInt(NSString *hex, unsigned int *result) {
+    NSScanner *scanner = [NSScanner scannerWithString:hex];
+    return [scanner scanHexInt:result];
+}
+
+#pragma mark husl
 Tuple huslToLch(Tuple husl) {
     // Bad things happen when you reach a limit
     if (husl.c > 99.9999999) {
@@ -357,48 +402,6 @@ Tuple lchToHuslp(Tuple lch) {
     CGFloat s = lch.b / max * 100;
     Tuple huslp = {lch.c, s, lch.a};
     return huslp;
-}
-
-
-// Rounds number to a given number of decimal places
-CGFloat roundPlaces(CGFloat num, NSUInteger places) {
-    CGFloat n = pow(10, places);
-    return round(num * n) / n;
-}
-
-CGFloat checkBorders(CGFloat channel) {
-    if (channel < 0) {
-        return 0;
-    }
-    if (channel > 1) {
-        return 1;
-    }
-    return channel;
-}
-
-// Represents rgb [0-1] values as [0-255] values. Errors out if value
-// out of the range
-Tuple rgbPrepare(Tuple tuple) {
-    tuple.a = roundPlaces(tuple.a, 3);
-    tuple.b = roundPlaces(tuple.b, 3);
-    tuple.c = roundPlaces(tuple.c, 3);
-    
-    if (tuple.a < -0.0001 || tuple.a > 1.0001 ||
-        tuple.b < -0.0001 || tuple.b > 1.0001 ||
-        tuple.c < -0.0001 || tuple.c > 1.0001) {
-        @throw @"Illegal rgb value";
-    }
-    
-    tuple.a = round(255*checkBorders(tuple.a));
-    tuple.b = round(255*checkBorders(tuple.b));
-    tuple.c = round(255*checkBorders(tuple.c));
-    
-    return tuple;
-}
-
-BOOL hexToInt(NSString *hex, unsigned int *result) {
-    NSScanner *scanner = [NSScanner scannerWithString:hex];
-    return [scanner scanHexInt:result];
 }
 
 #pragma mark Public functions

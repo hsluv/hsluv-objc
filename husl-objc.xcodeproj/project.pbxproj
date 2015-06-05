@@ -38,6 +38,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DB86C3C61B2243230086C007 /* husl_objc+Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl_objc+Test.h"; sourceTree = "<group>"; };
 		DB9445641B208E670060C49C /* libhusl-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libhusl-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB9445671B208E670060C49C /* husl_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = husl_objc.h; sourceTree = "<group>"; };
 		DB9445691B208E680060C49C /* husl_objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = husl_objc.m; sourceTree = "<group>"; };
@@ -89,6 +90,7 @@
 			children = (
 				DB9445671B208E670060C49C /* husl_objc.h */,
 				DB9445691B208E680060C49C /* husl_objc.m */,
+				DB86C3C61B2243230086C007 /* husl_objc+Test.h */,
 			);
 			path = "husl-objc";
 			sourceTree = "<group>";
@@ -370,6 +372,7 @@
 				DB94457A1B208E680060C49C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DB94457B1B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objcTests" */ = {
 			isa = XCConfigurationList;
@@ -378,6 +381,7 @@
 				DB94457D1B208E680060C49C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
