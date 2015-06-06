@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.authors            = { "Alexei Boronine" => "alexei@boronine.com", "Roger Tallada" => "info@rogertallada.com" }
   s.ios.deployment_target = "6.0"
   s.osx.deployment_target = "10.7"
-  s.source       = { :git => "https://github.com/tallada/husl-objc.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/tallada/husl-objc.git", :tag => "0.0.0" }
   s.source_files  = "husl-objc", "husl-objc/**/*.{h,m}"
   s.requires_arc = true
 end
