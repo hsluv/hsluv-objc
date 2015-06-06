@@ -2,8 +2,8 @@
 //  husl_objc.h
 //  husl-objc
 //
-//  Created by Roger on 4/6/15.
-//  Copyright (c) 2015 Alexei Boronine, Roger Tallada. All rights reserved.
+//  Created by Roger Tallada on 4/6/15.
+//  Copyright (c) 2015 Alexei Boronine
 //
 
 #import <Foundation/Foundation.h>
