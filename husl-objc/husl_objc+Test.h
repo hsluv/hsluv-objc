@@ -3,7 +3,7 @@
 //  husl-objc
 //
 //  Created by Roger on 5/6/15.
-//  Copyright (c) 2015 Roger Tallada. All rights reserved.
+//  Copyright (c) 2015 Alexei Boronine, Roger Tallada. All rights reserved.
 //
 
 #ifndef husl_objc_husl_objc_Test_h
