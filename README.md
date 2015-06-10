@@ -14,7 +14,7 @@ Otherwise, include this files in your project:
 
 ##How to use
 
-Include `husl-objc.h`, which defines the following functions:
+Import `husl-objc.h`, which defines the following functions:
 
 ~~~objective-c
 // Accepts red, green and blue values between 0 and 1, returns the color in hex format, as in "#012C4A"
