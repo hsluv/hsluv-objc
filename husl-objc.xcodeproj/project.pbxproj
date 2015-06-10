@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DB9445681B208E670060C49C /* husl_objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB9445671B208E670060C49C /* husl_objc.h */; };
-		DB94456A1B208E680060C49C /* husl_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9445691B208E680060C49C /* husl_objc.m */; };
+		DB9445681B208E670060C49C /* husl-objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB9445671B208E670060C49C /* husl-objc.h */; };
+		DB94456A1B208E680060C49C /* husl-objc.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9445691B208E680060C49C /* husl-objc.m */; };
 		DB9445701B208E680060C49C /* libhusl-objc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9445641B208E670060C49C /* libhusl-objc.a */; };
 		DB94457F1B20910D0060C49C /* HuslObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DB94457E1B20910D0060C49C /* HuslObjCTests.m */; };
 		DB9445811B20E8450060C49C /* snapshot-rev3.json in Resources */ = {isa = PBXBuildFile; fileRef = DB9445801B20E8450060C49C /* snapshot-rev3.json */; };
@@ -31,17 +31,17 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				DB9445681B208E670060C49C /* husl_objc.h in CopyFiles */,
+				DB9445681B208E670060C49C /* husl-objc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		DB86C3C61B2243230086C007 /* husl_objc+Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl_objc+Test.h"; sourceTree = "<group>"; };
+		DB86C3C61B2243230086C007 /* husl-objc+Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl-objc+Test.h"; sourceTree = "<group>"; };
 		DB9445641B208E670060C49C /* libhusl-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libhusl-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DB9445671B208E670060C49C /* husl_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = husl_objc.h; sourceTree = "<group>"; };
-		DB9445691B208E680060C49C /* husl_objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = husl_objc.m; sourceTree = "<group>"; };
+		DB9445671B208E670060C49C /* husl-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl-objc.h"; sourceTree = "<group>"; };
+		DB9445691B208E680060C49C /* husl-objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "husl-objc.m"; sourceTree = "<group>"; };
 		DB94456F1B208E680060C49C /* husl-objcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "husl-objcTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB9445751B208E680060C49C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DB94457E1B20910D0060C49C /* HuslObjCTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HuslObjCTests.m; sourceTree = "<group>"; };
@@ -88,9 +88,9 @@
 		DB9445661B208E670060C49C /* husl-objc */ = {
 			isa = PBXGroup;
 			children = (
-				DB9445671B208E670060C49C /* husl_objc.h */,
-				DB9445691B208E680060C49C /* husl_objc.m */,
-				DB86C3C61B2243230086C007 /* husl_objc+Test.h */,
+				DB9445671B208E670060C49C /* husl-objc.h */,
+				DB9445691B208E680060C49C /* husl-objc.m */,
+				DB86C3C61B2243230086C007 /* husl-objc+Test.h */,
 			);
 			path = "husl-objc";
 			sourceTree = "<group>";
@@ -202,7 +202,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB94456A1B208E680060C49C /* husl_objc.m in Sources */,
+				DB94456A1B208E680060C49C /* husl-objc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
