@@ -8,13 +8,13 @@ If you're using [CocoaPods](https://cocoapods.org) just add `pod 'husl-objc'` to
 
 Otherwise, include this files in your project:
 
-- husl_objc.h
-- husl_objc+Tests.h
-- husl_objc.c
+- husl-objc.h
+- husl-objc+Tests.h
+- husl-objc.c
 
 ##How to use
 
-Include `husl_objc.h`, which defines the following functions:
+Include `husl-objc.h`, which defines the following functions:
 
 ~~~objective-c
 // Accepts red, green and blue values between 0 and 1, returns the color in hex format, as in "#012C4A"
