@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DB78AE941B4C733000F191CA /* snapshot-rev4.json in Resources */ = {isa = PBXBuildFile; fileRef = DB78AE931B4C733000F191CA /* snapshot-rev4.json */; };
 		DB9445681B208E670060C49C /* husl-objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB9445671B208E670060C49C /* husl-objc.h */; };
 		DB94456A1B208E680060C49C /* husl-objc.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9445691B208E680060C49C /* husl-objc.m */; };
 		DB9445701B208E680060C49C /* libhusl-objc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9445641B208E670060C49C /* libhusl-objc.a */; };
@@ -38,6 +39,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DB78AE931B4C733000F191CA /* snapshot-rev4.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "snapshot-rev4.json"; sourceTree = "<group>"; };
 		DB86C3C61B2243230086C007 /* husl-objc+Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl-objc+Test.h"; sourceTree = "<group>"; };
 		DB9445641B208E670060C49C /* libhusl-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libhusl-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB9445671B208E670060C49C /* husl-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl-objc.h"; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				DB9445801B20E8450060C49C /* snapshot-rev3.json */,
+				DB78AE931B4C733000F191CA /* snapshot-rev4.json */,
 				DB9445751B208E680060C49C /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -191,6 +194,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB78AE941B4C733000F191CA /* snapshot-rev4.json in Resources */,
 				DB9445811B20E8450060C49C /* snapshot-rev3.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

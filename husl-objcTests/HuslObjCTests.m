@@ -66,7 +66,7 @@ const NSString *kHuslp = @"huslp";
 }
 
 - (void)testMatchesStableSnapshot {
-    NSString *stableSnapshotFilename = @"snapshot-rev3";
+    NSString *stableSnapshotFilename = @"snapshot-rev4";
     
     NSString *filePath =[[NSBundle bundleForClass:[self class]] pathForResource:stableSnapshotFilename ofType:@"json"];
     NSError *error;
