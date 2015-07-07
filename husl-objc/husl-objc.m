@@ -181,7 +181,8 @@ CGFloat maxSafeChromaForL(CGFloat l)  {
 CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
     CGFloat hrad = h / 360 * M_PI * 2;
     CGFloat minLength = CGFLOAT_MAX;
-    for (NSValue *line in getBounds(l)) {
+    NSArray *bounds = getBounds(l);
+    for (NSValue *line in bounds) {
         Tuple2 lineTuple;
         getTupleFromNSValue(line, lineTuple);
         CGFloat l = lengthOfRayUntilIntersect(hrad, lineTuple);
