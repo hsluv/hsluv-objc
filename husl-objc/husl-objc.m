@@ -44,7 +44,7 @@ typedef struct tuple2 {
 } Tuple2;
 
 #define getTupleFromNSValue(value,tuple) [value getValue:&tuple]
-#define nsvalueFromTuple(tuple,objCType) [NSValue value:&tuple withObjCType:objCType]
+#define nsvalueFromTuple(tuple,oCType) [NSValue valueWithBytes:&tuple objCType:oCType]
 
 static NSArray *m; //lazy initialization
 static NSArray *m_inv;
