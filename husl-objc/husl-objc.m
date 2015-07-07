@@ -43,11 +43,44 @@ typedef struct tuple2 {
     CGFloat a, b;
 } Tuple2;
 
-#define getTupleFromNSValue(value,tuple) [value getValue:&tuple]
-#define nsvalueFromTuple(tuple,oCType) [NSValue valueWithBytes:&tuple objCType:oCType]
+typedef struct matrix {
+    Tuple a, b, c;
+} Matrix;
 
-static NSArray *m; //lazy initialization
-static NSArray *m_inv;
+// An struct to avoid creating objecs in getBounds. It will always contain 6 lines.
+typedef struct lineBounds {
+    Tuple2 line0, line1, line2, line3, line4, line5;
+} LineBounds;
+
+static Matrix m = {
+    {3.240969941904521, -1.537383177570093, -0.498610760293}, // R
+    {-0.96924363628087, 1.87596750150772, 0.041555057407175}, // G
+    {0.055630079696993, -0.20397695888897, 1.056971514242878} // B
+};
+
+static Matrix m_inv = {
+    {0.41239079926595, 0.35758433938387, 0.18048078840183}, // X
+    {0.21263900587151, 0.71516867876775, 0.072192315360733}, // Y
+    {0.019330818715591, 0.11919477979462, 0.95053215224966} // Z
+};
+
+Tuple matrixElement(Matrix m, NSUInteger i) {
+    switch (i) {
+        case 0:
+            return m.a;
+            break;
+        case 1:
+            return m.b;
+            break;
+        case 2:
+            return m.c;
+            break;
+        default:
+            break;
+    }
+    Tuple none;
+    return none;
+}
 
 //Constants
 // Hard-coded D65 standard illuminant
@@ -62,43 +95,17 @@ CGFloat refV = 0.46831999493879;
 CGFloat kappa = 903.2962962;
 CGFloat epsilon = 0.0088564516;
 
-void setM() {
-    if (!m) {
-        Tuple R = {3.240969941904521, -1.537383177570093, -0.498610760293};
-        Tuple G = {-0.96924363628087, 1.87596750150772, 0.041555057407175};
-        Tuple B = {0.055630079696993, -0.20397695888897, 1.056971514242878};
-        m = @[nsvalueFromTuple(R, @encode(Tuple)),
-              nsvalueFromTuple(G, @encode(Tuple)),
-              nsvalueFromTuple(B, @encode(Tuple))];
-    }
-}
-
-void setM_inv() {
-    if (!m_inv) {
-        Tuple X = {0.41239079926595, 0.35758433938387, 0.18048078840183};
-        Tuple Y = {0.21263900587151, 0.71516867876775, 0.072192315360733};
-        Tuple Z = {0.019330818715591, 0.11919477979462, 0.95053215224966};
-        m_inv = @[nsvalueFromTuple(X, @encode(Tuple)),
-                  nsvalueFromTuple(Y, @encode(Tuple)),
-                  nsvalueFromTuple(Z, @encode(Tuple))];
-    }
-}
-
 // For a given lightness, return a list of 6 lines in slope-intercept
 // form that represent the bounds in CIELUV, stepping over which will
 // push a value out of the RGB gamut
-NSArray * getBounds(CGFloat l) {
+LineBounds getBounds(CGFloat l) {
     CGFloat sub1 = pow(l + 16, 3) / 1560896;
     CGFloat sub2 = sub1 > epsilon ? sub1 : (l / kappa);
-    NSMutableArray *ret = [NSMutableArray array];
     
-    if (!m) {
-        setM();
-    }
+    LineBounds ret;
     
     for (int channel=0; channel<3; channel++) {
-        Tuple mTuple;
-        getTupleFromNSValue((NSValue *)m[channel], mTuple);
+        Tuple mTuple = matrixElement(m, channel);
         
         CGFloat m1 = mTuple.a;
         CGFloat m2 = mTuple.b;
@@ -110,8 +117,31 @@ NSArray * getBounds(CGFloat l) {
             CGFloat bottom = (632260 * m3 - 126452 * m2) * sub2 + 126452 * t;
             
             Tuple2 tuple = {top1 / bottom, top2 / bottom};
-            NSValue *newValue = nsvalueFromTuple(tuple, @encode(Tuple2));
-            [ret addObject:newValue];
+            
+            NSUInteger lineNumber = channel * 2 + t;
+            switch (lineNumber) {
+                case 0:
+                    ret.line0 = tuple;
+                    break;
+                case 1:
+                    ret.line1 = tuple;
+                    break;
+                case 2:
+                    ret.line2 = tuple;
+                    break;
+                case 3:
+                    ret.line3 = tuple;
+                    break;
+                case 4:
+                    ret.line4 = tuple;
+                    break;
+                case 5:
+                    ret.line5 = tuple;
+                    break;
+                    
+                default:
+                    break;
+            }
         }
     }
     return ret;
@@ -151,15 +181,43 @@ CGFloat lengthOfRayUntilIntersect(CGFloat theta, Tuple2 line) {
     return len;
 }
 
+Tuple2 lineBoundAtIndex(LineBounds bounds, NSUInteger i) {
+    Tuple2 tuple;
+    switch (i) {
+        case 0:
+            tuple = bounds.line0;
+            break;
+        case 1:
+            tuple = bounds.line1;
+            break;
+        case 2:
+            tuple = bounds.line2;
+            break;
+        case 3:
+            tuple = bounds.line3;
+            break;
+        case 4:
+            tuple = bounds.line4;
+            break;
+        case 5:
+            tuple = bounds.line5;
+            break;
+            
+        default:
+            break;
+    }
+    return tuple;
+}
+
 // For given lightness, returns the maximum chroma. Keeping the chroma value
 // below this number will ensure that for any hue, the color is within the RGB
 // gamut.
 CGFloat maxSafeChromaForL(CGFloat l)  {
     CGFloat minLength = CGFLOAT_MAX;
-    NSArray *bounds = getBounds(l);
-    for (NSValue *bound in bounds) {
-        Tuple2 boundTuple;
-        getTupleFromNSValue(bound, boundTuple);
+    LineBounds bounds = getBounds(l);
+    for (NSUInteger i = 0; i < 6; i++) {
+        Tuple2 boundTuple = lineBoundAtIndex(bounds, i);
+
         CGFloat m1 = boundTuple.a;
         CGFloat b1 = boundTuple.b;
 
@@ -181,10 +239,9 @@ CGFloat maxSafeChromaForL(CGFloat l)  {
 CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
     CGFloat hrad = h / 360 * M_PI * 2;
     CGFloat minLength = CGFLOAT_MAX;
-    NSArray *bounds = getBounds(l);
-    for (NSValue *line in bounds) {
-        Tuple2 lineTuple;
-        getTupleFromNSValue(line, lineTuple);
+    LineBounds bounds = getBounds(l);
+    for (NSUInteger i = 0; i < 6; i++) {
+        Tuple2 lineTuple = lineBoundAtIndex(bounds, i);
         CGFloat l = lengthOfRayUntilIntersect(hrad, lineTuple);
         if (l >= 0)  {
             if (l < minLength) {
@@ -240,17 +297,9 @@ CGFloat toLinear(CGFloat c) {
 #pragma mark Conversion functions
 
 Tuple xyzToRgb(Tuple xyz) {
-    if (!m) {
-        setM();
-    }
-    Tuple m0, m1, m2;
-    getTupleFromNSValue(m[0], m0);
-    getTupleFromNSValue(m[1], m1);
-    getTupleFromNSValue(m[2], m2);
-    
-    CGFloat r = fromLinear(tupleDotProduct(m0, xyz));
-    CGFloat g = fromLinear(tupleDotProduct(m1, xyz));
-    CGFloat b = fromLinear(tupleDotProduct(m2, xyz));
+    CGFloat r = fromLinear(tupleDotProduct(m.a, xyz));
+    CGFloat g = fromLinear(tupleDotProduct(m.b, xyz));
+    CGFloat b = fromLinear(tupleDotProduct(m.c, xyz));
     
     Tuple rgb = {r, g, b};
     return rgb;
@@ -258,17 +307,10 @@ Tuple xyzToRgb(Tuple xyz) {
 
 Tuple rgbToXyz(Tuple rgb) {
     Tuple rgbl = {toLinear(rgb.a), toLinear(rgb.b), toLinear(rgb.c)};
-    if (!m_inv) {
-        setM_inv();
-    }
-    Tuple m_inv0, m_inv1, m_inv2;
-    getTupleFromNSValue(m_inv[0], m_inv0);
-    getTupleFromNSValue(m_inv[1], m_inv1);
-    getTupleFromNSValue(m_inv[2], m_inv2);
-    
-    CGFloat x = tupleDotProduct(m_inv0, rgbl);
-    CGFloat y = tupleDotProduct(m_inv1, rgbl);
-    CGFloat z = tupleDotProduct(m_inv2, rgbl);
+
+    CGFloat x = tupleDotProduct(m_inv.a, rgbl);
+    CGFloat y = tupleDotProduct(m_inv.b, rgbl);
+    CGFloat z = tupleDotProduct(m_inv.c, rgbl);
     
     Tuple xyz = {x, y, z};
     return xyz;
