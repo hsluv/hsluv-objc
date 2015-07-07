@@ -505,9 +505,9 @@ NSString *rgbToHex(CGFloat red, CGFloat green, CGFloat blue) {
     CGFloat g = roundTo6decimals(green);
     CGFloat b = roundTo6decimals(blue);
     
-    NSString *R = [NSString stringWithFormat:@"%02X", (int)(r * 255)];
-    NSString *G = [NSString stringWithFormat:@"%02X", (int)(g * 255)];
-    NSString *B = [NSString stringWithFormat:@"%02X", (int)(b * 255)];
+    NSString *R = [NSString stringWithFormat:@"%02X", (int)round(r * 255)];
+    NSString *G = [NSString stringWithFormat:@"%02X", (int)round(g * 255)];
+    NSString *B = [NSString stringWithFormat:@"%02X", (int)round(b * 255)];
     
     return [[[hex stringByAppendingString:R] stringByAppendingString:G] stringByAppendingString:B];
 }
