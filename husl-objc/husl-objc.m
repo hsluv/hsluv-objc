@@ -37,6 +37,15 @@
  #    CGFloat(lab_e);
  #*/
 
+
+// Tuple of 2 elements and helper macros to encapsulate it in an NSValue
+typedef struct tuple2 {
+    CGFloat a, b;
+} Tuple2;
+
+#define getTuple2FromNSValue(value,tuple) [value getValue:&tuple]
+#define nsvalueFromTuple2(tuple) [NSValue value:&tuple withObjCType:@encode(Tuple2)]
+
 static NSArray *m; //lazy initialization
 static NSArray *m_inv;
 
@@ -90,26 +99,23 @@ NSArray * getBounds(CGFloat l) {
             CGFloat top2 = (838422 * m3 + 769860 * m2 + 731718 * m1) * l * sub2 -  769860 * t * l;
             CGFloat bottom = (632260 * m3 - 126452 * m2) * sub2 + 126452 * t;
             
-            NSArray *newValues = [NSArray arrayWithObjects:@(top1 / bottom), @(top2 / bottom), nil];
-            [ret addObject:newValues];
+            Tuple2 tuple = {top1 / bottom, top2 / bottom};
+            NSValue *newValue = nsvalueFromTuple2(tuple);
+            [ret addObject:newValue];
         }
     }
     return ret;
 }
 
-CGFloat intersectLineLine(NSArray *line1, NSArray *line2) {
-    CGFloat line1_0 = ((NSNumber *)line1[0]).doubleValue;
-    CGFloat line1_1 = ((NSNumber *)line1[1]).doubleValue;
-    CGFloat line2_0 = ((NSNumber *)line2[0]).doubleValue;
-    CGFloat line2_1 = ((NSNumber *)line2[1]).doubleValue;
-    return (line1_1 - line2_1) / (line2_0 - line1_0);
+CGFloat intersectLineLine(Tuple2 line1, Tuple2 line2) {
+    return (line1.b - line2.b) / (line2.a - line1.a);
 }
 
 CGFloat distanceFromPole(CGPoint point) {
     return sqrt(pow(point.x, 2) + pow(point.y, 2));
 }
 
-CGFloat lengthOfRayUntilIntersect(CGFloat theta, NSArray *line) {
+CGFloat lengthOfRayUntilIntersect(CGFloat theta, Tuple2 line) {
     // theta  -- angle of ray starting at (0, 0)
     // m, b   -- slope and intercept of line
     // x1, y1 -- coordinates of intersection
@@ -126,8 +132,8 @@ CGFloat lengthOfRayUntilIntersect(CGFloat theta, NSArray *line) {
     // b = len * (sin(hrad) - m * cos(hrad))
     // len = b / (sin(hrad) - m * cos(hrad))
     //
-    CGFloat m1 = ((NSNumber *)line[0]).doubleValue;
-    CGFloat b1 = ((NSNumber *)line[1]).doubleValue;
+    CGFloat m1 = line.a;
+    CGFloat b1 = line.b;
     CGFloat len = b1 / (sin(theta) - m1 * cos(theta));
     //    if (len < 0) {
     //        return 0;
@@ -141,11 +147,15 @@ CGFloat lengthOfRayUntilIntersect(CGFloat theta, NSArray *line) {
 CGFloat maxSafeChromaForL(CGFloat l)  {
     CGFloat minLength = CGFLOAT_MAX;
     NSArray *bounds = getBounds(l);
-    for (NSArray *bound in bounds) {
-        CGFloat m1 = ((NSNumber *)bound[0]).doubleValue;
-        CGFloat b1 = ((NSNumber *)bound[1]).doubleValue;
+    for (NSValue *bound in bounds) {
+        Tuple2 boundTuple;
+        getTuple2FromNSValue(bound, boundTuple);
+        CGFloat m1 = boundTuple.a;
+        CGFloat b1 = boundTuple.b;
+
         // x where line intersects with perpendicular running though (0, 0)
-        CGFloat x = intersectLineLine(bound, @[@(-1 / m1), @0]);
+        Tuple2 line2 = {-1 / m1, 0};
+        CGFloat x = intersectLineLine(boundTuple, line2);
         CGFloat distance = distanceFromPole(CGPointMake(x, b1 + x * m1));
         if (distance >= 0) {
             if (distance < minLength) {
@@ -161,8 +171,10 @@ CGFloat maxSafeChromaForL(CGFloat l)  {
 CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
     CGFloat hrad = h / 360 * M_PI * 2;
     CGFloat minLength = CGFLOAT_MAX;
-    for (NSArray *line in getBounds(l)) {
-        CGFloat l = lengthOfRayUntilIntersect(hrad, line);
+    for (NSValue *line in getBounds(l)) {
+        Tuple2 lineTuple;
+        getTuple2FromNSValue(line, lineTuple);
+        CGFloat l = lengthOfRayUntilIntersect(hrad, lineTuple);
         if (l >= 0)  {
             if (l < minLength) {
                 minLength = l;
