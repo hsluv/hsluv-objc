@@ -367,12 +367,20 @@ Tuple luvToXyz(Tuple luv) {
 
 Tuple luvToLch(Tuple luv) {
     CGFloat l = luv.a, u = luv.b, v = luv.c;
-    CGFloat c = sqrt(pow(u, 2) + pow(v, 2));
-    CGFloat hRad = atan2(v, u);
-    CGFloat h = hRad * 360 / 2 / M_PI;
-    if (h < 0) {
-        h = 360 + h;
+    CGFloat h, c = sqrt(pow(u, 2) + pow(v, 2));
+    
+    // Greys: disambiguate hue
+    if (c < 0.00000001) {
+        h = 0;
     }
+    else {
+        CGFloat hrad = atan2(v, u);
+        h = hrad * 360 / 2 / M_PI;
+        if (h < 0) {
+            h = 360 + h;
+        }
+    }
+    
     Tuple lch = {l, c, h};
     return lch;
 }
@@ -402,67 +410,81 @@ BOOL hexToInt(NSString *hex, unsigned int *result) {
 
 #pragma mark husl
 Tuple huslToLch(Tuple husl) {
-    // Bad things happen when you reach a limit
-    if (husl.c > 99.9999999) {
-        Tuple lch = {100, 0, husl.a};
-        return lch;
+    CGFloat h = husl.a, s = husl.b, l = husl.c, c;
+
+    // White and black: disambiguate chroma
+    if (l > 99.9999999 || l < 0.00000001) {
+        c = 0;
     }
-    if (husl.c < 0.00000001) {
-        Tuple lch = {0, 0, husl.a};
-        return lch;
+    else {
+        CGFloat max = maxChromaForLH(l, h);
+        c = max / 100 * s;
     }
-    CGFloat max = maxChromaForLH(husl.c, husl.a);
-    CGFloat c = max / 100 * husl.b;
-    // I already tried this scaling function to improve the chroma
-    // uniformity. It did not work very well.
-    // C = Math.powf(S / 100,  1 / t) * max
-    Tuple lch = {husl.c, c, husl.a};
+    // Greys: disambiguate hue
+    if (s < 0.00000001) {
+        h = 0;
+    }
+    Tuple lch = {l, c, h};
     return lch;
 }
 
 Tuple lchToHusl(Tuple lch) {
-    if (lch.a > 99.9999999) {
-        Tuple husl = {lch.c, 0, 100};
-        return husl;
+    CGFloat l = lch.a, c = lch.b, h = lch.c, s;
+
+    // White and black: disambiguate saturation
+    if (l > 99.9999999 || l < 0.00000001) {
+        s = 0;
     }
-    if (lch.a < 0.00000001) {
-        Tuple husl = {lch.c, 0, 0};
-        return husl;
+    else {
+        CGFloat max = maxChromaForLH(l, h);
+        s = c / max * 100;
     }
-    CGFloat max = maxChromaForLH(lch.a, lch.c);
-    CGFloat s = lch.b / max * 100;
-    Tuple husl = {lch.c, s, lch.a};
+    // Greys: disambiguate hue
+    if (c < 0.00000001) {
+        h = 0;
+    }
+    Tuple husl = {h, s, l};
     return husl;
 }
 
 #pragma mark huslP
 Tuple huslpToLch(Tuple huslp) {
-    if (huslp.c > 99.9999999) {
-        Tuple lch = {100, 0, huslp.a};
-        return lch;
+    CGFloat h = huslp.a, s = huslp.b, l = huslp.c, c;
+
+    // White and black: disambiguate chroma
+    if (l > 99.9999999 || l < 0.00000001) {
+        c = 0;
     }
-    if (huslp.c < 0.00000001) {
-        Tuple lch = {0, 0, huslp.a};
-        return lch;
+    else {
+        CGFloat max = maxSafeChromaForL(l);
+        c = max / 100 * s;
     }
-    CGFloat max = maxSafeChromaForL(huslp.c);
-    CGFloat c = max / 100 * huslp.b;
-    Tuple lch = {huslp.c, c, huslp.a};
+    
+    // Greys: disambiguate hue
+    if (s < 0.00000001) {
+        h = 0;
+    }
+    Tuple lch = {l, c, h};
     return lch;
 }
 
 Tuple lchToHuslp(Tuple lch) {
-    if (lch.a > 99.9999999) {
-        Tuple huslp = {lch.c, 0, 100};
-        return huslp;
+    CGFloat l = lch.a, c = lch.b, h = lch.c, s;
+
+    // White and black: disambiguate saturation
+    if (l > 99.9999999 || l < 0.00000001) {
+        s = 0;
     }
-    if (lch.a < 0.00000001) {
-        Tuple huslp = {lch.c, 0, 0};
-        return huslp;
+    else {
+        CGFloat max = maxSafeChromaForL(l);
+        s = c / max * 100;
     }
-    CGFloat max = maxSafeChromaForL(lch.a);
-    CGFloat s = lch.b / max * 100;
-    Tuple huslp = {lch.c, s, lch.a};
+    // Greys: disambiguate hue
+    if (c < 0.00000001) {
+        h = 0;
+    }
+    
+    Tuple huslp = {h, s, l};
     return huslp;
 }
 
