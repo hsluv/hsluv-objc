@@ -83,11 +83,6 @@ Tuple matrixElement(Matrix m, NSUInteger i) {
 }
 
 //Constants
-// Hard-coded D65 standard illuminant
-CGFloat refX = 0.95045592705167173;
-CGFloat refY = 1.0;
-CGFloat refZ = 1.0890577507598784;
-
 CGFloat refU = 0.19783000664283681;
 CGFloat refV = 0.468319994938791;
 
@@ -317,23 +312,26 @@ Tuple rgbToXyz(Tuple rgb) {
 }
 
 // http://en.wikipedia.org/wiki/CIELUV
+// In these formulas, Yn refers to the reference white point. We are using
+// illuminant D65, so Yn (see refY in Maxima file) equals 1. The formula is
+// simplified accordingly.
 CGFloat yToL (CGFloat y) {
     CGFloat l;
     if (y <= epsilon) {
-        l = (y / refY) * kappa;
+        l = y * kappa;
     }
     else {
-        l = 116.0 * pow((y / refY), 1.0/3.0) - 16.0;
+        l = 116.0 * pow(y, 1.0/3.0) - 16.0;
     }
     return l;
 }
 
 CGFloat lToY (CGFloat l) {
     if (l <= 8) {
-        return refY * l / kappa;
+        return l / kappa;
     }
     else {
-        return refY * powl((l + 16) / 116, 3);
+        return powl((l + 16) / 116, 3);
     }
 }
 
@@ -387,12 +385,6 @@ Tuple lchToLuv(Tuple lch) {
     return luv;
 }
 
-// Rounds number to a given number of decimal places
-CGFloat roundPlaces(CGFloat num, NSUInteger places) {
-    CGFloat n = pow(10, places);
-    return round(num * n) / n;
-}
-
 CGFloat checkBorders(CGFloat channel) {
     if (channel < 0) {
         return 0;
@@ -401,26 +393,6 @@ CGFloat checkBorders(CGFloat channel) {
         return 1;
     }
     return channel;
-}
-
-// Represents rgb [0-1] values as [0-255] values. Errors out if value
-// out of the range
-Tuple rgbPrepare(Tuple tuple) {
-    tuple.a = roundPlaces(tuple.a, 3);
-    tuple.b = roundPlaces(tuple.b, 3);
-    tuple.c = roundPlaces(tuple.c, 3);
-    
-    if (tuple.a < -0.0001 || tuple.a > 1.0001 ||
-        tuple.b < -0.0001 || tuple.b > 1.0001 ||
-        tuple.c < -0.0001 || tuple.c > 1.0001) {
-        @throw @"Illegal rgb value";
-    }
-    
-    tuple.a = round(255*checkBorders(tuple.a));
-    tuple.b = round(255*checkBorders(tuple.b));
-    tuple.c = round(255*checkBorders(tuple.c));
-    
-    return tuple;
 }
 
 BOOL hexToInt(NSString *hex, unsigned int *result) {
@@ -494,15 +466,26 @@ Tuple lchToHuslp(Tuple lch) {
     return huslp;
 }
 
+CGFloat roundTo6decimals(CGFloat channel) {
+    CGFloat ch = round(channel * 1e6) / 1e6;
+    if (ch < 0 || ch > 1) {
+        @throw [NSString stringWithFormat:@"Illegal rgb value: %@", @(ch)];
+    }
+    return ch;
+}
+
 #pragma mark Public functions
 
 NSString *rgbToHex(CGFloat red, CGFloat green, CGFloat blue) {
-    Tuple rgb = {red, green, blue};
     NSString *hex = @"#";
-    Tuple tuple = rgbPrepare(rgb);
-    NSString *R = [NSString stringWithFormat:@"%02X", (int)tuple.a];
-    NSString *G = [NSString stringWithFormat:@"%02X", (int)tuple.b];
-    NSString *B = [NSString stringWithFormat:@"%02X", (int)tuple.c];
+    
+    CGFloat r = roundTo6decimals(red);
+    CGFloat g = roundTo6decimals(green);
+    CGFloat b = roundTo6decimals(blue);
+    
+    NSString *R = [NSString stringWithFormat:@"%02X", (int)(r * 255)];
+    NSString *G = [NSString stringWithFormat:@"%02X", (int)(g * 255)];
+    NSString *B = [NSString stringWithFormat:@"%02X", (int)(b * 255)];
     
     return [[[hex stringByAppendingString:R] stringByAppendingString:G] stringByAppendingString:B];
 }
