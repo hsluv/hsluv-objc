@@ -38,13 +38,13 @@
  #*/
 
 
-// Tuple of 2 elements and helper macros to encapsulate it in an NSValue
+// Tuple of 2 elements and helper macros to encapsulate tuples in an NSValue
 typedef struct tuple2 {
     CGFloat a, b;
 } Tuple2;
 
-#define getTuple2FromNSValue(value,tuple) [value getValue:&tuple]
-#define nsvalueFromTuple2(tuple) [NSValue value:&tuple withObjCType:@encode(Tuple2)]
+#define getTupleFromNSValue(value,tuple) [value getValue:&tuple]
+#define nsvalueFromTuple(tuple,objCType) [NSValue value:&tuple withObjCType:objCType]
 
 static NSArray *m; //lazy initialization
 static NSArray *m_inv;
@@ -64,17 +64,23 @@ CGFloat epsilon = 0.0088564516;
 
 void setM() {
     if (!m) {
-        m = @[@[@3.240969941904521, @-1.537383177570093, @-0.498610760293], //R
-              @[@-0.96924363628087, @1.87596750150772, @0.041555057407175], //G
-              @[@0.055630079696993, @-0.20397695888897, @1.056971514242878]]; //B
+        Tuple R = {3.240969941904521, -1.537383177570093, -0.498610760293};
+        Tuple G = {-0.96924363628087, 1.87596750150772, 0.041555057407175};
+        Tuple B = {0.055630079696993, -0.20397695888897, 1.056971514242878};
+        m = @[nsvalueFromTuple(R, @encode(Tuple)),
+              nsvalueFromTuple(G, @encode(Tuple)),
+              nsvalueFromTuple(B, @encode(Tuple))];
     }
 }
 
 void setM_inv() {
     if (!m_inv) {
-        m_inv = @[@[@0.41239079926595, @0.35758433938387, @0.18048078840183], //X
-                  @[@0.21263900587151, @0.71516867876775, @0.072192315360733], //Y
-                  @[@0.019330818715591, @0.11919477979462, @0.95053215224966]]; //Z
+        Tuple X = {0.41239079926595, 0.35758433938387, 0.18048078840183};
+        Tuple Y = {0.21263900587151, 0.71516867876775, 0.072192315360733};
+        Tuple Z = {0.019330818715591, 0.11919477979462, 0.95053215224966};
+        m_inv = @[nsvalueFromTuple(X, @encode(Tuple)),
+                  nsvalueFromTuple(Y, @encode(Tuple)),
+                  nsvalueFromTuple(Z, @encode(Tuple))];
     }
 }
 
@@ -91,16 +97,20 @@ NSArray * getBounds(CGFloat l) {
     }
     
     for (int channel=0; channel<3; channel++) {
-        CGFloat m1 = ((NSNumber *)((NSArray *)m[channel])[0]).doubleValue;
-        CGFloat m2 = ((NSNumber *)((NSArray *)m[channel])[1]).doubleValue;
-        CGFloat m3 = ((NSNumber *)((NSArray *)m[channel])[2]).doubleValue;
+        Tuple mTuple;
+        getTupleFromNSValue((NSValue *)m[channel], mTuple);
+        
+        CGFloat m1 = mTuple.a;
+        CGFloat m2 = mTuple.b;
+        CGFloat m3 = mTuple.c;
+        
         for (int t=0; t <= 1; t++) {
             CGFloat top1 = (284517 * m1 - 94839 * m3) * sub2;
             CGFloat top2 = (838422 * m3 + 769860 * m2 + 731718 * m1) * l * sub2 -  769860 * t * l;
             CGFloat bottom = (632260 * m3 - 126452 * m2) * sub2 + 126452 * t;
             
             Tuple2 tuple = {top1 / bottom, top2 / bottom};
-            NSValue *newValue = nsvalueFromTuple2(tuple);
+            NSValue *newValue = nsvalueFromTuple(tuple, @encode(Tuple2));
             [ret addObject:newValue];
         }
     }
@@ -149,7 +159,7 @@ CGFloat maxSafeChromaForL(CGFloat l)  {
     NSArray *bounds = getBounds(l);
     for (NSValue *bound in bounds) {
         Tuple2 boundTuple;
-        getTuple2FromNSValue(bound, boundTuple);
+        getTupleFromNSValue(bound, boundTuple);
         CGFloat m1 = boundTuple.a;
         CGFloat b1 = boundTuple.b;
 
@@ -173,7 +183,7 @@ CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
     CGFloat minLength = CGFLOAT_MAX;
     for (NSValue *line in getBounds(l)) {
         Tuple2 lineTuple;
-        getTuple2FromNSValue(line, lineTuple);
+        getTupleFromNSValue(line, lineTuple);
         CGFloat l = lengthOfRayUntilIntersect(hrad, lineTuple);
         if (l >= 0)  {
             if (l < minLength) {
@@ -185,10 +195,23 @@ CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
 }
 
 
-CGFloat dotProduct(NSArray *a, NSArray *b) {
+
+CGFloat tupleDotProduct(Tuple t1, Tuple t2) {
     CGFloat ret = 0.0;
-    for (NSUInteger i = 0; i < a.count; i++) {
-        ret += ((NSNumber *)a[i]).doubleValue * ((NSNumber *)b[i]).doubleValue;
+    for (NSUInteger i = 0; i < 3; i++) {
+        switch (i) {
+            case 0:
+                ret += t1.a * t2.a;
+                break;
+            case 1:
+                ret += t1.b * t2.b;
+                break;
+            case 2:
+                ret += t1.c * t2.c;
+                break;
+            default:
+                break;
+        }
     }
     return ret;
 }
@@ -216,25 +239,36 @@ CGFloat toLinear(CGFloat c) {
 #pragma mark Conversion functions
 
 Tuple xyzToRgb(Tuple xyz) {
-    NSArray *xyzArray = @[@(xyz.a), @(xyz.b), @(xyz.c)];
     if (!m) {
         setM();
     }
-    CGFloat r = fromLinear(dotProduct(m[0], xyzArray));
-    CGFloat g = fromLinear(dotProduct(m[1], xyzArray));
-    CGFloat b = fromLinear(dotProduct(m[2], xyzArray));
+    Tuple m0, m1, m2;
+    getTupleFromNSValue(m[0], m0);
+    getTupleFromNSValue(m[1], m1);
+    getTupleFromNSValue(m[2], m2);
+    
+    CGFloat r = fromLinear(tupleDotProduct(m0, xyz));
+    CGFloat g = fromLinear(tupleDotProduct(m1, xyz));
+    CGFloat b = fromLinear(tupleDotProduct(m2, xyz));
+    
     Tuple rgb = {r, g, b};
     return rgb;
 }
 
 Tuple rgbToXyz(Tuple rgb) {
-    NSArray *rgbl = @[@(toLinear(rgb.a)), @(toLinear(rgb.b)), @(toLinear(rgb.c))];
+    Tuple rgbl = {toLinear(rgb.a), toLinear(rgb.b), toLinear(rgb.c)};
     if (!m_inv) {
         setM_inv();
     }
-    CGFloat x = dotProduct(m_inv[0], rgbl);
-    CGFloat y = dotProduct(m_inv[1], rgbl);
-    CGFloat z = dotProduct(m_inv[2], rgbl);
+    Tuple m_inv0, m_inv1, m_inv2;
+    getTupleFromNSValue(m_inv[0], m_inv0);
+    getTupleFromNSValue(m_inv[1], m_inv1);
+    getTupleFromNSValue(m_inv[2], m_inv2);
+    
+    CGFloat x = tupleDotProduct(m_inv0, rgbl);
+    CGFloat y = tupleDotProduct(m_inv1, rgbl);
+    CGFloat z = tupleDotProduct(m_inv2, rgbl);
+    
     Tuple xyz = {x, y, z};
     return xyz;
 }
