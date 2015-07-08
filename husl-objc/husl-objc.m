@@ -38,7 +38,6 @@
  #*/
 
 
-// Tuple of 2 elements and helper macros to encapsulate tuples in an NSValue
 typedef struct tuple2 {
     CGFloat a, b;
 } Tuple2;
