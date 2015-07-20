@@ -42,44 +42,17 @@ typedef struct tuple2 {
     CGFloat a, b;
 } Tuple2;
 
-typedef struct matrix {
-    Tuple a, b, c;
-} Matrix;
-
-// An struct to avoid creating objecs in getBounds. It will always contain 6 lines.
-typedef struct lineBounds {
-    Tuple2 line0, line1, line2, line3, line4, line5;
-} LineBounds;
-
-static Matrix m = {
+static Tuple m[3] = {
     { 3.2409699419045214,   -1.5373831775700935, -0.49861076029300328}, // R
     {-0.96924363628087983,   1.8759675015077207,  0.041555057407175613}, // G
     { 0.055630079696993609, -0.20397695888897657, 1.0569715142428786} // B
 };
 
-static Matrix m_inv = {
+static Tuple m_inv[3] = {
     {0.41239079926595948,  0.35758433938387796, 0.18048078840183429}, // X
     {0.21263900587151036,  0.71516867876775593, 0.072192315360733715}, // Y
     {0.019330818715591851, 0.11919477979462599, 0.95053215224966058} // Z
 };
-
-Tuple matrixElement(Matrix m, NSUInteger i) {
-    switch (i) {
-        case 0:
-            return m.a;
-            break;
-        case 1:
-            return m.b;
-            break;
-        case 2:
-            return m.c;
-            break;
-        default:
-            break;
-    }
-    Tuple none;
-    return none;
-}
 
 //Constants
 CGFloat refU = 0.19783000664283681;
@@ -92,14 +65,14 @@ CGFloat epsilon = 0.0088564516790356308;
 // For a given lightness, return a list of 6 lines in slope-intercept
 // form that represent the bounds in CIELUV, stepping over which will
 // push a value out of the RGB gamut
-LineBounds getBounds(CGFloat l) {
+Tuple2 * getBounds(CGFloat l) {
     CGFloat sub1 = pow(l + 16, 3) / 1560896;
     CGFloat sub2 = sub1 > epsilon ? sub1 : (l / kappa);
     
-    LineBounds ret;
+    Tuple2 *ret = malloc(6 * sizeof(Tuple2));
     
     for (int channel=0; channel<3; channel++) {
-        Tuple mTuple = matrixElement(m, channel);
+        Tuple mTuple = m[channel];
         
         CGFloat m1 = mTuple.a;
         CGFloat m2 = mTuple.b;
@@ -113,29 +86,7 @@ LineBounds getBounds(CGFloat l) {
             Tuple2 tuple = {top1 / bottom, top2 / bottom};
             
             NSUInteger lineNumber = channel * 2 + t;
-            switch (lineNumber) {
-                case 0:
-                    ret.line0 = tuple;
-                    break;
-                case 1:
-                    ret.line1 = tuple;
-                    break;
-                case 2:
-                    ret.line2 = tuple;
-                    break;
-                case 3:
-                    ret.line3 = tuple;
-                    break;
-                case 4:
-                    ret.line4 = tuple;
-                    break;
-                case 5:
-                    ret.line5 = tuple;
-                    break;
-                    
-                default:
-                    break;
-            }
+            ret[lineNumber] = tuple;
         }
     }
     return ret;
@@ -175,42 +126,14 @@ CGFloat lengthOfRayUntilIntersect(CGFloat theta, Tuple2 line) {
     return len;
 }
 
-Tuple2 lineBoundAtIndex(LineBounds bounds, NSUInteger i) {
-    Tuple2 tuple;
-    switch (i) {
-        case 0:
-            tuple = bounds.line0;
-            break;
-        case 1:
-            tuple = bounds.line1;
-            break;
-        case 2:
-            tuple = bounds.line2;
-            break;
-        case 3:
-            tuple = bounds.line3;
-            break;
-        case 4:
-            tuple = bounds.line4;
-            break;
-        case 5:
-            tuple = bounds.line5;
-            break;
-            
-        default:
-            break;
-    }
-    return tuple;
-}
-
 // For given lightness, returns the maximum chroma. Keeping the chroma value
 // below this number will ensure that for any hue, the color is within the RGB
 // gamut.
 CGFloat maxSafeChromaForL(CGFloat l)  {
     CGFloat minLength = CGFLOAT_MAX;
-    LineBounds bounds = getBounds(l);
+    Tuple2 *bounds = getBounds(l);
     for (NSUInteger i = 0; i < 6; i++) {
-        Tuple2 boundTuple = lineBoundAtIndex(bounds, i);
+        Tuple2 boundTuple = bounds[i];
 
         CGFloat m1 = boundTuple.a;
         CGFloat b1 = boundTuple.b;
@@ -225,6 +148,7 @@ CGFloat maxSafeChromaForL(CGFloat l)  {
             }
         }
     }
+    free(bounds);
     return minLength;
 }
 
@@ -233,9 +157,9 @@ CGFloat maxSafeChromaForL(CGFloat l)  {
 CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
     CGFloat hrad = h / 360 * M_PI * 2;
     CGFloat minLength = CGFLOAT_MAX;
-    LineBounds bounds = getBounds(l);
+    Tuple2 *bounds = getBounds(l);
     for (NSUInteger i = 0; i < 6; i++) {
-        Tuple2 lineTuple = lineBoundAtIndex(bounds, i);
+        Tuple2 lineTuple = bounds[i];
         CGFloat l = lengthOfRayUntilIntersect(hrad, lineTuple);
         if (l >= 0)  {
             if (l < minLength) {
@@ -243,6 +167,7 @@ CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
             }
         }
     }
+    free(bounds);
     return minLength;
 }
 
@@ -291,9 +216,9 @@ CGFloat toLinear(CGFloat c) {
 #pragma mark Conversion functions
 
 Tuple xyzToRgb(Tuple xyz) {
-    CGFloat r = fromLinear(tupleDotProduct(m.a, xyz));
-    CGFloat g = fromLinear(tupleDotProduct(m.b, xyz));
-    CGFloat b = fromLinear(tupleDotProduct(m.c, xyz));
+    CGFloat r = fromLinear(tupleDotProduct(m[0], xyz));
+    CGFloat g = fromLinear(tupleDotProduct(m[1], xyz));
+    CGFloat b = fromLinear(tupleDotProduct(m[2], xyz));
     
     Tuple rgb = {r, g, b};
     return rgb;
@@ -302,9 +227,9 @@ Tuple xyzToRgb(Tuple xyz) {
 Tuple rgbToXyz(Tuple rgb) {
     Tuple rgbl = {toLinear(rgb.a), toLinear(rgb.b), toLinear(rgb.c)};
 
-    CGFloat x = tupleDotProduct(m_inv.a, rgbl);
-    CGFloat y = tupleDotProduct(m_inv.b, rgbl);
-    CGFloat z = tupleDotProduct(m_inv.c, rgbl);
+    CGFloat x = tupleDotProduct(m_inv[0], rgbl);
+    CGFloat y = tupleDotProduct(m_inv[1], rgbl);
+    CGFloat z = tupleDotProduct(m_inv[2], rgbl);
     
     Tuple xyz = {x, y, z};
     return xyz;
