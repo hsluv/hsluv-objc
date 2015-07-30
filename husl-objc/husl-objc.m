@@ -127,10 +127,6 @@ double intersectLineLine(vector_double2 line1, vector_double2 line2) {
     return (line1.y - line2.y) / (line2.x - line1.x);
 }
 
-double distanceFromPole(vector_double2 point) {
-    return sqrt(pow(point.x, 2) + pow(point.y, 2));
-}
-
 // For given lightness, returns the maximum chroma. Keeping the chroma value
 // below this number will ensure that for any hue, the color is within the RGB
 // gamut.
@@ -146,7 +142,7 @@ double maxSafeChromaForL(double l)  {
         // x where line intersects with perpendicular running though (0, 0)
         vector_double2 line2 = (vector_double2){-1 / m1, 0};
         double x = intersectLineLine(bounddouble3, line2);
-        double dist = distanceFromPole((vector_double2){x, b1 + x * m1});
+        double dist = vector_length((vector_double2){x, b1 + x * m1}); // distanceFromPole
         if (dist >= 0) {
             if (dist < minLength) {
                 minLength = dist;
@@ -282,7 +278,8 @@ vector_double3 luvToXyz(vector_double3 luv) {
 
 vector_double3 luvToLch(vector_double3 luv) {
     double l = luv.x, u = luv.y, v = luv.z;
-    double h, c = sqrt(pow(u, 2) + pow(v, 2));
+    vector_double2 uv = {u, v};
+    double h, c = vector_length(uv);
     
     // Greys: disambiguate hue
     if (c < 0.00000001) {
