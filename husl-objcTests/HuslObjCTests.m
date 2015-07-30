@@ -40,18 +40,17 @@ const NSString *kHuslp = @"huslp";
         [manySamples addObject:hex];
     }];
     
-    BOOL passNoPastel = [self hexSamplesTester:manySamples usingPastelMode:NO];
-    XCTAssert(passNoPastel, @"should convert between HUSL and hex");
+    XCTAssert([self hexSamplesTester:manySamples usingPastelMode:NO], @"should convert between HUSL and hex");
     XCTAssert([self hexSamplesTester:manySamples usingPastelMode:YES], @"should convert between HUSLp and hex");
 }
 
 - (void)testFitsWithinRGBRanges {
-    CGFloat rgbRangeTolerance = 0.00000000001;
+    double rgbRangeTolerance = 0.00000000001;
     
-    for (CGFloat h = 0; h < 360; h = h + 5) {
-        for (CGFloat s = 0; s < 100; s = s + 5) {
-            for (CGFloat l = 0; l < 100; l = l + 5) {
-                CGFloat r, g, b;
+    for (double h = 0; h < 360; h = h + 5) {
+        for (double s = 0; s < 100; s = s + 5) {
+            for (double l = 0; l < 100; l = l + 5) {
+                double r, g, b;
                 huslToRgb(h, s, l, &r, &g, &b);
                 XCTAssert(-rgbRangeTolerance <= r && r <= 1 + rgbRangeTolerance, @"HUSL testFitsWithinRGBRanges");
                 XCTAssert(-rgbRangeTolerance <= g && g <= 1 + rgbRangeTolerance, @"HUSL testFitsWithinRGBRanges");
@@ -117,15 +116,15 @@ const NSString *kHuslp = @"huslp";
 #pragma mark Helper methods
 
 - (BOOL)compareComponents:(NSArray *)tuple1 with:(NSArray *)tuple2 {
-    CGFloat snapshotTolerance = 0.00000000001;
+    double snapshotTolerance = 0.00000000001;
     if (tuple1.count != tuple2.count || tuple1.count != 3) {
         return NO;
     }
     
     for (NSUInteger i = 0; i < 3; i = i + 1) {
-        CGFloat component1 = [(NSNumber *)tuple1[i] doubleValue];
-        CGFloat component2 = [(NSNumber *)tuple2[i] doubleValue];
-        CGFloat diff = fabs(component1 - component2);
+        double component1 = [(NSNumber *)tuple1[i] doubleValue];
+        double component2 = [(NSNumber *)tuple2[i] doubleValue];
+        double diff = fabs(component1 - component2);
         if (diff >= snapshotTolerance) {
             return NO;
         }
@@ -137,9 +136,9 @@ const NSString *kHuslp = @"huslp";
 - (BOOL)hexSamplesTester:(NSArray *)manySamples usingPastelMode:(BOOL)pMode {
     BOOL huslToHexOk = YES;
     for (NSString *hex in manySamples) {
-        CGFloat r, g, b;
+        double r, g, b;
         if (hexToRgb(hex, &r, &g, &b)) {
-            CGFloat h, s, l;
+            double h, s, l;
             if (!pMode) {
                 rgbToHusl(r, g, b, &h, &s, &l);
                 huslToRgb(h, s, l, &r, &g, &b);
@@ -177,18 +176,18 @@ const NSString *kHuslp = @"huslp";
     }
 }
 
-- (NSArray *)tupleToArray:(vector_float3) t {
-    return @[@((double)t.x), @((double)t.y), @((double)t.z)];
+- (NSArray *)tupleToArray:(vector_double3) t {
+    return @[@(t.x), @(t.y), @(t.z)];
 }
 
 - (NSDictionary *)snapshot {
     NSMutableDictionary *samples = [NSMutableDictionary dictionary];
     
     [self processSamples:^(NSString *hex) {
-        CGFloat r, g, b;
+        double r, g, b;
         if (hexToRgb(hex, &r, &g, &b)) {
-            vector_float3 xyz, luv, lch, husl, huslp;
-            vector_float3 rgb = {r, g, b};
+            vector_double3 xyz, luv, lch, husl, huslp;
+            vector_double3 rgb = {r, g, b};
             xyz = rgbToXyz(rgb);
             luv = xyzToLuv(xyz);
             lch = luvToLch(luv);

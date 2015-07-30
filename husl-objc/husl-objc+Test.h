@@ -11,10 +11,10 @@
 #ifndef husl_objc_husl_objc_Test_h
 #define husl_objc_husl_objc_Test_h
 
-vector_float3 rgbToXyz(vector_float3 rgb);
-vector_float3 xyzToLuv(vector_float3 xyz);
-vector_float3 luvToLch(vector_float3 luv);
-vector_float3 lchToHusl(vector_float3 lch);
-vector_float3 lchToHuslp(vector_float3 lch);
+vector_double3 rgbToXyz(vector_double3 rgb);
+vector_double3 xyzToLuv(vector_double3 xyz);
+vector_double3 luvToLch(vector_double3 luv);
+vector_double3 lchToHusl(vector_double3 lch);
+vector_double3 lchToHuslp(vector_double3 lch);
 
 #endif

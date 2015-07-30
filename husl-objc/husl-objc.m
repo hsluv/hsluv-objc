@@ -25,97 +25,79 @@
  # All numbers taken from math/bounds.wxm wxMaxima file:
  #
  #    fpprintprec: 16;
- #    CGFloat(M_XYZ_RGB);
- #    CGFloat(M_RGB_XYZ);
- #    CGFloat(refX);
- #    CGFloat(refY);
- #    CGFloat(refZ);
- #    CGFloat(refU);
- #    CGFloat(refV);
- #    CGFloat(lab_k);
- #    CGFloat(lab_e);
+ #    double(M_XYZ_RGB);
+ #    double(M_RGB_XYZ);
+ #    double(refX);
+ #    double(refY);
+ #    double(refZ);
+ #    double(refU);
+ #    double(refV);
+ #    double(lab_k);
+ #    double(lab_e);
  #*/
 
-#define NO_POINT (vector_float2){FLT_MAX, FLT_MAX}
-#define NO_SEGMENT (vector_float2x2){NO_POINT, NO_POINT}
+#define NO_POINT (vector_double2){FLT_MAX, FLT_MAX}
+#define NO_SEGMENT (vector_double2x2){NO_POINT, NO_POINT}
 
-typedef struct LineBounds {
-    vector_float2 a, b, c, d, e, f;
-} LineBounds;
+static vector_double3 mR = { 3.2409699419045214,   -1.5373831775700935, -0.49861076029300328}; // R
+static vector_double3 mG = {-0.96924363628087983,   1.8759675015077207,  0.041555057407175613}; // G
+static vector_double3 mB = { 0.055630079696993609, -0.20397695888897657, 1.0569715142428786}; // B
 
-static vector_float3 mR = { 3.2409699419045214,   -1.5373831775700935, -0.49861076029300328}; // R
-static vector_float3 mG = {-0.96924363628087983,   1.8759675015077207,  0.041555057407175613}; // G
-static vector_float3 mB = { 0.055630079696993609, -0.20397695888897657, 1.0569715142428786}; // B
-
-static vector_float3 m_invX = {0.41239079926595948,  0.35758433938387796, 0.18048078840183429}; // X
-static vector_float3 m_invY = {0.21263900587151036,  0.71516867876775593, 0.072192315360733715}; // Y
-static vector_float3 m_invZ = {0.019330818715591851, 0.11919477979462599, 0.95053215224966058}; // Z
+static vector_double3 m_invX = {0.41239079926595948,  0.35758433938387796, 0.18048078840183429}; // X
+static vector_double3 m_invY = {0.21263900587151036,  0.71516867876775593, 0.072192315360733715}; // Y
+static vector_double3 m_invZ = {0.019330818715591851, 0.11919477979462599, 0.95053215224966058}; // Z
 
 //Constants
-static float refU = 0.19783000664283681;
-static float refV = 0.468319994938791;
+static double refU = 0.19783000664283681;
+static double refV = 0.468319994938791;
 
 // CIE LUV constants
-static float kappa = 903.2962962962963;
-static float epsilon = 0.0088564516790356308;
+static double kappa = 903.2962962962963;
+static double epsilon = 0.0088564516790356308;
 
 // For a given lightness, return a list of 6 lines in slope-intercept
 // form that represent the bounds in CIELUV, stepping over which will
 // push a value out of the RGB gamut
-LineBounds getBounds(float l) {
-    float sub1 = pow(l + 16, 3) / 1560896;
-    float sub2 = sub1 > epsilon ? sub1 : (l / kappa);
+vector_double2 *getBounds(double l) {
+    double sub1 = pow(l + 16, 3) / 1560896;
+    double sub2 = sub1 > epsilon ? sub1 : (l / kappa);
     
-    LineBounds ret;
+    vector_double2 *ret = malloc(sizeof(vector_double2)*6);
     
     for (int channel=0; channel<3; channel++) {
         
-        vector_float3 mfloat3;
+        vector_double3 mdouble3;
         switch(channel) {
-            case 0: mfloat3 = mR;
+            case 0: mdouble3 = mR;
                 break;
-            case 1: mfloat3 = mG;
+            case 1: mdouble3 = mG;
                 break;
-            case 2: mfloat3 = mB;
+            case 2: mdouble3 = mB;
                 break;
-            default: mfloat3 = (vector_float3){0, 0, 0};
+            default: mdouble3 = (vector_double3){0, 0, 0};
                 break;
         }
         
-        float m1 = mfloat3[0];
-        float m2 = mfloat3[1];
-        float m3 = mfloat3[2];
+        double m1 = mdouble3[0];
+        double m2 = mdouble3[1];
+        double m3 = mdouble3[2];
         
         for (int t=0; t <= 1; t++) {
-            float top1 = (284517 * m1 - 94839 * m3) * sub2;
-            float top2 = (838422 * m3 + 769860 * m2 + 731718 * m1) * l * sub2 -  769860 * t * l;
-            float bottom = (632260 * m3 - 126452 * m2) * sub2 + 126452 * t;
+            double top1 = (284517 * m1 - 94839 * m3) * sub2;
+            double top2 = (838422 * m3 + 769860 * m2 + 731718 * m1) * l * sub2 -  769860 * t * l;
+            double bottom = (632260 * m3 - 126452 * m2) * sub2 + 126452 * t;
             
-            vector_float2 float3 = {top1 / bottom, top2 / bottom};
+            vector_double2 double3 = {top1 / bottom, top2 / bottom};
             
             unsigned lineNumber = channel * 2 + t;
-            switch(lineNumber) {
-                case 0: ret.a = float3;
-                    break;
-                case 1: ret.b = float3;
-                    break;
-                case 2: ret.c = float3;
-                    break;
-                case 3: ret.d = float3;
-                    break;
-                case 4: ret.e = float3;
-                    break;
-                case 5: ret.f = float3;
-                    break;
-                default:
-                    break;
-            }
+            ret[lineNumber] = double3;
+            
         }
     }
     return ret;
 }
 
-float lengthOfRayUntilIntersect(float theta, vector_float2 line) {
+double lengthOfRayUntilIntersect(double theta, vector_double2 line) {
     // theta  -- angle of ray starting at (0, 0)
     // m, b   -- slope and intercept of line
     // x1, y1 -- coordinates of intersection
@@ -132,88 +114,70 @@ float lengthOfRayUntilIntersect(float theta, vector_float2 line) {
     // b = len * (sin(hrad) - m * cos(hrad))
     // len = b / (sin(hrad) - m * cos(hrad))
     //
-    float m1 = line.x;
-    float b1 = line.y;
-    float len = b1 / (sin(theta) - m1 * cos(theta));
+    double m1 = line.x;
+    double b1 = line.y;
+    double len = b1 / (sin(theta) - m1 * cos(theta));
     //    if (len < 0) {
     //        return 0;
     //    }
     return len;
 }
 
-float intersectLineLine(vector_float2 line1, vector_float2 line2) {
+double intersectLineLine(vector_double2 line1, vector_double2 line2) {
     return (line1.y - line2.y) / (line2.x - line1.x);
 }
 
-float distanceFromPole(vector_float2 point) {
+double distanceFromPole(vector_double2 point) {
     return sqrt(pow(point.x, 2) + pow(point.y, 2));
-}
-
-vector_float2 lineAtIndex(LineBounds bounds, unsigned index) {
-    switch(index) {
-        case 0: return bounds.a;
-            break;
-        case 1: return bounds.b;
-            break;
-        case 2: return bounds.c;
-            break;
-        case 3: return bounds.d;
-            break;
-        case 4: return bounds.e;
-            break;
-        case 5: return bounds.f;
-            break;
-        default:
-            break;
-    }
-    return (vector_float2){0,0}; // Should never get here.
 }
 
 // For given lightness, returns the maximum chroma. Keeping the chroma value
 // below this number will ensure that for any hue, the color is within the RGB
 // gamut.
-float maxSafeChromaForL(float l)  {
-    float minLength = FLT_MAX;
-    LineBounds bounds = getBounds(l);
+double maxSafeChromaForL(double l)  {
+    double minLength = FLT_MAX;
+    vector_double2 *bounds = getBounds(l);
     for (unsigned i = 0; i < 6; i++) {
-        vector_float2 boundfloat3 = lineAtIndex(bounds, i);
+        vector_double2 bounddouble3 = bounds[i];
         
-        float m1 = boundfloat3.x;
-        float b1 = boundfloat3.y;
+        double m1 = bounddouble3.x;
+        double b1 = bounddouble3.y;
         
         // x where line intersects with perpendicular running though (0, 0)
-        vector_float2 line2 = (vector_float2){-1 / m1, 0};
-        float x = intersectLineLine(boundfloat3, line2);
-        float dist = distanceFromPole((vector_float2){x, b1 + x * m1});
+        vector_double2 line2 = (vector_double2){-1 / m1, 0};
+        double x = intersectLineLine(bounddouble3, line2);
+        double dist = distanceFromPole((vector_double2){x, b1 + x * m1});
         if (dist >= 0) {
             if (dist < minLength) {
                 minLength = dist;
             }
         }
     }
+    free(bounds);
     return minLength;
 }
 
 // For a given lightness and hue, return the maximum chroma that fits in
 // the RGB gamut.
-float maxChromaForLH(float l, float h) {
-    float hrad = h / 360 * M_PI * 2;
-    float minLength = FLT_MAX;
-    LineBounds bounds = getBounds(l);
+double maxChromaForLH(double l, double h) {
+    double hrad = h / 360 * M_PI * 2;
+    double minLength = FLT_MAX;
+    vector_double2 *bounds = getBounds(l);
     for (unsigned i = 0; i < 6; i++) {
-        vector_float2 linefloat3 = lineAtIndex(bounds, i);
-        float l = lengthOfRayUntilIntersect(hrad, linefloat3);
+        vector_double2 linedouble3 = bounds[i];
+        double l = lengthOfRayUntilIntersect(hrad, linedouble3);
         if (l >= 0)  {
             if (l < minLength) {
                 minLength = l;
             }
         }
     }
+    free(bounds);
     return minLength;
 }
 
 // Used for rgb conversions
-float fromLinear(float c) {
+double fromLinear(double c) {
     if (c <= 0.0031308) {
         return 12.92 * c;
     }
@@ -222,8 +186,8 @@ float fromLinear(float c) {
     }
 }
 
-float toLinear(float c) {
-    float a = 0.055;
+double toLinear(double c) {
+    double a = 0.055;
     if (c > 0.04045) {
         return pow((c + a) / (1 + a), 2.4);
     }
@@ -234,31 +198,31 @@ float toLinear(float c) {
 
 // Conversion functions
 
-vector_float3 xyzToRgb(vector_float3 xyz) {
-    float r = fromLinear(vector_dot(mR, xyz));
-    float g = fromLinear(vector_dot(mG, xyz));
-    float b = fromLinear(vector_dot(mB, xyz));
+vector_double3 xyzToRgb(vector_double3 xyz) {
+    double r = fromLinear(vector_dot(mR, xyz));
+    double g = fromLinear(vector_dot(mG, xyz));
+    double b = fromLinear(vector_dot(mB, xyz));
     
-    vector_float3 rgb = {r, g, b};
+    vector_double3 rgb = {r, g, b};
     return rgb;
 }
 
-//float dotProduct(vector_float3 m1, vector_float3 m2) {
-//    float product = 0;
+//double dotProduct(vector_double3 m1, vector_double3 m2) {
+//    double product = 0;
 //    for (unsigned i = 0; i < 3; i++) {
 //        product += m1[i] * m2[i];
 //    }
 //    return product == 0.0 ? 0.5 : product;
 //}
 
-vector_float3 rgbToXyz(vector_float3 rgb) {
-    vector_float3 rgbl = {toLinear(rgb.x), toLinear(rgb.y), toLinear(rgb.z)};
+vector_double3 rgbToXyz(vector_double3 rgb) {
+    vector_double3 rgbl = {toLinear(rgb.x), toLinear(rgb.y), toLinear(rgb.z)};
     
-    float x = vector_dot(m_invX, rgbl);
-    float y = vector_dot(m_invY, rgbl);
-    float z = vector_dot(m_invZ, rgbl);
+    double x = vector_dot(m_invX, rgbl);
+    double y = vector_dot(m_invY, rgbl);
+    double z = vector_dot(m_invZ, rgbl);
     
-    vector_float3 xyz = {x, y, z};
+    vector_double3 xyz = {x, y, z};
     return xyz;
 }
 
@@ -266,8 +230,8 @@ vector_float3 rgbToXyz(vector_float3 rgb) {
 // In these formulas, Yn refers to the reference white point. We are using
 // illuminant D65, so Yn (see refY in Maxima file) equals 1. The formula is
 // simplified accordingly.
-float yToL (float y) {
-    float l;
+double yToL (double y) {
+    double l;
     if (y <= epsilon) {
         l = y * kappa;
     }
@@ -277,7 +241,7 @@ float yToL (float y) {
     return l;
 }
 
-float lToY (float l) {
+double lToY (double l) {
     if (l <= 8) {
         return l / kappa;
     }
@@ -286,123 +250,123 @@ float lToY (float l) {
     }
 }
 
-vector_float3 xyzToLuv(vector_float3 xyz) {
-    float varU = (4 * xyz.x) / (xyz.x + (15 * xyz.y) + (3 * xyz.z));
-    float varV = (9 * xyz.y) / (xyz.x + (15 * xyz.y) + (3 * xyz.z));
-    float l = yToL(xyz.y);
+vector_double3 xyzToLuv(vector_double3 xyz) {
+    double varU = (4 * xyz.x) / (xyz.x + (15 * xyz.y) + (3 * xyz.z));
+    double varV = (9 * xyz.y) / (xyz.x + (15 * xyz.y) + (3 * xyz.z));
+    double l = yToL(xyz.y);
     // Black will create a divide-by-zero error
     if (l==0) {
-        vector_float3 luv = {0, 0, 0};
+        vector_double3 luv = {0, 0, 0};
         return luv;
     }
-    float u = 13 * l * (varU - refU);
-    float v = 13 * l * (varV - refV);
-    vector_float3 luv = {l, u, v};
+    double u = 13 * l * (varU - refU);
+    double v = 13 * l * (varV - refV);
+    vector_double3 luv = {l, u, v};
     return luv;
 }
 
-vector_float3 luvToXyz(vector_float3 luv) {
+vector_double3 luvToXyz(vector_double3 luv) {
     // Black will create a divide-by-zero error
     if (luv.x == 0) {
-        vector_float3 xyz = {0, 0, 0};
+        vector_double3 xyz = {0, 0, 0};
         return xyz;
     }
-    float varU = luv.y / (13 * luv.x) + refU;
-    float varV = luv.z / (13 * luv.x) + refV;
-    float y = lToY(luv.x);
-    float x = 0 - (9 * y * varU) / ((varU - 4) * varV - varU * varV);
-    float z = (9 * y - (15 * varV * y) - (varV * x)) / (3 * varV);
-    vector_float3 xyz = {x, y, z};
+    double varU = luv.y / (13 * luv.x) + refU;
+    double varV = luv.z / (13 * luv.x) + refV;
+    double y = lToY(luv.x);
+    double x = 0 - (9 * y * varU) / ((varU - 4) * varV - varU * varV);
+    double z = (9 * y - (15 * varV * y) - (varV * x)) / (3 * varV);
+    vector_double3 xyz = {x, y, z};
     return xyz;
 }
 
-vector_float3 luvToLch(vector_float3 luv) {
-    float l = luv.x, u = luv.y, v = luv.z;
-    float h, c = sqrt(pow(u, 2) + pow(v, 2));
+vector_double3 luvToLch(vector_double3 luv) {
+    double l = luv.x, u = luv.y, v = luv.z;
+    double h, c = sqrt(pow(u, 2) + pow(v, 2));
     
     // Greys: disambiguate hue
     if (c < 0.00000001) {
         h = 0;
     }
     else {
-        float hrad = atan2(v, u);
+        double hrad = atan2(v, u);
         h = hrad * 360 / 2 / M_PI;
         if (h < 0) {
             h = 360 + h;
         }
     }
     
-    vector_float3 lch = {l, c, h};
+    vector_double3 lch = {l, c, h};
     return lch;
 }
 
-vector_float3 lchToLuv(vector_float3 lch) {
-    float hRad = lch.z / 360 * 2 * M_PI;
-    float u = cos(hRad) * lch.y;
-    float v = sin(hRad) * lch.y;
-    vector_float3 luv = {lch.x, u, v};
+vector_double3 lchToLuv(vector_double3 lch) {
+    double hRad = lch.z / 360 * 2 * M_PI;
+    double u = cos(hRad) * lch.y;
+    double v = sin(hRad) * lch.y;
+    vector_double3 luv = {lch.x, u, v};
     return luv;
 }
 
 // HUSL
-vector_float3 huslToLch(vector_float3 husl) {
-    float h = husl.x, s = husl.y, l = husl.z, c;
+vector_double3 huslToLch(vector_double3 husl) {
+    double h = husl.x, s = husl.y, l = husl.z, c;
     
     // White and black: disambiguate chroma
     if (l > 99.9999999 || l < 0.00000001) {
         c = 0;
     }
     else {
-        float max = maxChromaForLH(l, h);
+        double max = maxChromaForLH(l, h);
         c = max / 100 * s;
     }
     // Greys: disambiguate hue
     if (s < 0.00000001) {
         h = 0;
     }
-    vector_float3 lch = {l, c, h};
+    vector_double3 lch = {l, c, h};
     return lch;
 }
 
-vector_float3 lchToHusl(vector_float3 lch) {
-    float l = lch.x, c = lch.y, h = lch.z, s;
+vector_double3 lchToHusl(vector_double3 lch) {
+    double l = lch.x, c = lch.y, h = lch.z, s;
     
     // White and black: disambiguate saturation
     if (l > 99.9999999 || l < 0.00000001) {
         s = 0;
     }
     else {
-        float max = maxChromaForLH(l, h);
+        double max = maxChromaForLH(l, h);
         s = c / max * 100;
     }
     // Greys: disambiguate hue
     if (c < 0.00000001) {
         h = 0;
     }
-    vector_float3 husl = {h, s, l};
+    vector_double3 husl = {h, s, l};
     return husl;
 }
 
-vector_float3 vectorHuslToRgb(vector_float3 husl) {
-    vector_float3 rgb = xyzToRgb(luvToXyz(lchToLuv(huslToLch(husl))));
+vector_double3 vectorHuslToRgb(vector_double3 husl) {
+    vector_double3 rgb = xyzToRgb(luvToXyz(lchToLuv(huslToLch(husl))));
     return rgb;
 }
 
-vector_float3 vectorRgbToHusl(vector_float3 rgb) {
-    vector_float3 husl = lchToHusl(luvToLch(xyzToLuv(rgbToXyz(rgb))));
+vector_double3 vectorRgbToHusl(vector_double3 rgb) {
+    vector_double3 husl = lchToHusl(luvToLch(xyzToLuv(rgbToXyz(rgb))));
     return husl;
 }
 
 #pragma mark huslP
-vector_float3 huslpToLch(vector_float3 huslp) {
-    float h = huslp.x, s = huslp.y, l = huslp.z, c;
+vector_double3 huslpToLch(vector_double3 huslp) {
+    double h = huslp.x, s = huslp.y, l = huslp.z, c;
     
     // White and black: disambiguate chroma
     if (l > 99.9999999 || l < 0.00000001) {
         c = 0;
     }
     else {
-        CGFloat max = maxSafeChromaForL(l);
+        double max = maxSafeChromaForL(l);
         c = max / 100 * s;
     }
     
@@ -410,19 +374,19 @@ vector_float3 huslpToLch(vector_float3 huslp) {
     if (s < 0.00000001) {
         h = 0;
     }
-    vector_float3 lch = {l, c, h};
+    vector_double3 lch = {l, c, h};
     return lch;
 }
 
-vector_float3 lchToHuslp(vector_float3 lch) {
-    float l = lch.x, c = lch.y, h = lch.z, s;
+vector_double3 lchToHuslp(vector_double3 lch) {
+    double l = lch.x, c = lch.y, h = lch.z, s;
     
     // White and black: disambiguate saturation
     if (l > 99.9999999 || l < 0.00000001) {
         s = 0;
     }
     else {
-        CGFloat max = maxSafeChromaForL(l);
+        double max = maxSafeChromaForL(l);
         s = c / max * 100;
     }
     // Greys: disambiguate hue
@@ -430,7 +394,17 @@ vector_float3 lchToHuslp(vector_float3 lch) {
         h = 0;
     }
     
-    vector_float3 huslp = {h, s, l};
+    vector_double3 huslp = {h, s, l};
+    return huslp;
+}
+
+vector_double3 vectorHuslpToRgb(vector_double3 huslp) {
+    vector_double3 rgb = xyzToRgb(luvToXyz(lchToLuv(huslpToLch(huslp))));
+    return rgb;
+}
+
+vector_double3 vectorRgbToHuslp(vector_double3 rgb) {
+    vector_double3 huslp = lchToHuslp(luvToLch(xyzToLuv(rgbToXyz(rgb))));
     return huslp;
 }
 
@@ -439,8 +413,8 @@ BOOL hexToInt(NSString *hex, unsigned int *result) {
     return [scanner scanHexInt:result];
 }
 
-CGFloat roundTo6decimals(CGFloat channel) {
-    CGFloat ch = round(channel * 1e6) / 1e6;
+double roundTo6decimals(double channel) {
+    double ch = round(channel * 1e6) / 1e6;
     if (ch < 0 || ch > 1) {
         @throw [NSString stringWithFormat:@"Illegal rgb value: %@", @(ch)];
     }
@@ -449,12 +423,12 @@ CGFloat roundTo6decimals(CGFloat channel) {
 
 #pragma mark Public functions
 
-NSString *rgbToHex(CGFloat red, CGFloat green, CGFloat blue) {
+NSString *rgbToHex(double red, double green, double blue) {
     NSString *hex = @"#";
     
-    CGFloat r = roundTo6decimals(red);
-    CGFloat g = roundTo6decimals(green);
-    CGFloat b = roundTo6decimals(blue);
+    double r = roundTo6decimals(red);
+    double g = roundTo6decimals(green);
+    double b = roundTo6decimals(blue);
     
     NSString *R = [NSString stringWithFormat:@"%02X", (int)round(r * 255)];
     NSString *G = [NSString stringWithFormat:@"%02X", (int)round(g * 255)];
@@ -463,7 +437,7 @@ NSString *rgbToHex(CGFloat red, CGFloat green, CGFloat blue) {
     return [[[hex stringByAppendingString:R] stringByAppendingString:G] stringByAppendingString:B];
 }
 
-BOOL hexToRgb(NSString *hex, CGFloat *red, CGFloat *green, CGFloat *blue) {
+BOOL hexToRgb(NSString *hex, double *red, double *green, double *blue) {
     if ([hex length] >= 7) {
         if ([hex characterAtIndex:0] == '#') {
             hex = [hex substringFromIndex:1];
@@ -487,47 +461,47 @@ BOOL hexToRgb(NSString *hex, CGFloat *red, CGFloat *green, CGFloat *blue) {
             return NO;
         }
         
-        *red = (CGFloat)r / 255;
-        *green = (CGFloat)g / 255;
-        *blue = (CGFloat)b / 255;
+        *red = (double)r / 255;
+        *green = (double)g / 255;
+        *blue = (double)b / 255;
         
         return YES;
     }
     return NO;
 }
 
-void huslToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
-    vector_float3 husl = {hue, saturation, lightness};
+void huslToRgb(double hue, double saturation, double lightness, double *red, double *green, double *blue) {
+    vector_double3 husl = {hue, saturation, lightness};
     
-    vector_float3 rgb = vectorHuslToRgb(husl);
+    vector_double3 rgb = vectorHuslToRgb(husl);
     
     *red = rgb.x;
     *green = rgb.y;
     *blue = rgb.z;
 }
 
-void rgbToHusl(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
-    vector_float3 rgb = {red, green, blue};
-    vector_float3 husl = vectorRgbToHusl(rgb);
+void rgbToHusl(double red, double green, double blue, double *hue, double *saturation, double *lightness) {
+    vector_double3 rgb = {red, green, blue};
+    vector_double3 husl = vectorRgbToHusl(rgb);
     *hue = husl.x;
     *saturation = husl.y;
     *lightness = husl.z;
 }
 
-void huslpToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
-    vector_float3 huslp = {hue, saturation, lightness};
+void huslpToRgb(double hue, double saturation, double lightness, double *red, double *green, double *blue) {
+    vector_double3 huslp = {hue, saturation, lightness};
     
-    vector_float3 rgb = xyzToRgb(luvToXyz(lchToLuv(huslpToLch(huslp))));
+    vector_double3 rgb = vectorHuslpToRgb(huslp);
     
     *red = rgb.x;
     *green = rgb.y;
     *blue = rgb.z;
 }
 
-void rgbToHuslp(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
-    vector_float3 rgb = {red, green, blue};
+void rgbToHuslp(double red, double green, double blue, double *hue, double *saturation, double *lightness) {
+    vector_double3 rgb = {red, green, blue};
     
-    vector_float3 huslp = lchToHuslp(luvToLch(xyzToLuv(rgbToXyz(rgb))));
+    vector_double3 huslp = vectorRgbToHuslp(rgb);
     
     *hue = huslp.x;
     *saturation = huslp.y;
