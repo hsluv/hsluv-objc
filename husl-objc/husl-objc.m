@@ -8,7 +8,6 @@
 // Implementation of husl translated from husl.coffee
 
 
-#import <tgmath.h>
 #import "husl-objc.h"
 #import "husl-objc+Test.h"
 
@@ -37,70 +36,86 @@
  #    CGFloat(lab_e);
  #*/
 
+#define NO_POINT (vector_float2){FLT_MAX, FLT_MAX}
+#define NO_SEGMENT (vector_float2x2){NO_POINT, NO_POINT}
 
-typedef struct tuple2 {
-    CGFloat a, b;
-} Tuple2;
+typedef struct LineBounds {
+    vector_float2 a, b, c, d, e, f;
+} LineBounds;
 
-static Tuple m[3] = {
-    { 3.2409699419045214,   -1.5373831775700935, -0.49861076029300328}, // R
-    {-0.96924363628087983,   1.8759675015077207,  0.041555057407175613}, // G
-    { 0.055630079696993609, -0.20397695888897657, 1.0569715142428786} // B
-};
+static vector_float3 mR = { 3.2409699419045214,   -1.5373831775700935, -0.49861076029300328}; // R
+static vector_float3 mG = {-0.96924363628087983,   1.8759675015077207,  0.041555057407175613}; // G
+static vector_float3 mB = { 0.055630079696993609, -0.20397695888897657, 1.0569715142428786}; // B
 
-static Tuple m_inv[3] = {
-    {0.41239079926595948,  0.35758433938387796, 0.18048078840183429}, // X
-    {0.21263900587151036,  0.71516867876775593, 0.072192315360733715}, // Y
-    {0.019330818715591851, 0.11919477979462599, 0.95053215224966058} // Z
-};
+static vector_float3 m_invX = {0.41239079926595948,  0.35758433938387796, 0.18048078840183429}; // X
+static vector_float3 m_invY = {0.21263900587151036,  0.71516867876775593, 0.072192315360733715}; // Y
+static vector_float3 m_invZ = {0.019330818715591851, 0.11919477979462599, 0.95053215224966058}; // Z
 
 //Constants
-CGFloat refU = 0.19783000664283681;
-CGFloat refV = 0.468319994938791;
+static float refU = 0.19783000664283681;
+static float refV = 0.468319994938791;
 
 // CIE LUV constants
-CGFloat kappa = 903.2962962962963;
-CGFloat epsilon = 0.0088564516790356308;
+static float kappa = 903.2962962962963;
+static float epsilon = 0.0088564516790356308;
 
 // For a given lightness, return a list of 6 lines in slope-intercept
 // form that represent the bounds in CIELUV, stepping over which will
 // push a value out of the RGB gamut
-Tuple2 * getBounds(CGFloat l) {
-    CGFloat sub1 = pow(l + 16, 3) / 1560896;
-    CGFloat sub2 = sub1 > epsilon ? sub1 : (l / kappa);
+LineBounds getBounds(float l) {
+    float sub1 = pow(l + 16, 3) / 1560896;
+    float sub2 = sub1 > epsilon ? sub1 : (l / kappa);
     
-    Tuple2 *ret = malloc(6 * sizeof(Tuple2));
+    LineBounds ret;
     
     for (int channel=0; channel<3; channel++) {
-        Tuple mTuple = m[channel];
         
-        CGFloat m1 = mTuple.a;
-        CGFloat m2 = mTuple.b;
-        CGFloat m3 = mTuple.c;
+        vector_float3 mfloat3;
+        switch(channel) {
+            case 0: mfloat3 = mR;
+                break;
+            case 1: mfloat3 = mG;
+                break;
+            case 2: mfloat3 = mB;
+                break;
+            default: mfloat3 = (vector_float3){0, 0, 0};
+                break;
+        }
+        
+        float m1 = mfloat3[0];
+        float m2 = mfloat3[1];
+        float m3 = mfloat3[2];
         
         for (int t=0; t <= 1; t++) {
-            CGFloat top1 = (284517 * m1 - 94839 * m3) * sub2;
-            CGFloat top2 = (838422 * m3 + 769860 * m2 + 731718 * m1) * l * sub2 -  769860 * t * l;
-            CGFloat bottom = (632260 * m3 - 126452 * m2) * sub2 + 126452 * t;
+            float top1 = (284517 * m1 - 94839 * m3) * sub2;
+            float top2 = (838422 * m3 + 769860 * m2 + 731718 * m1) * l * sub2 -  769860 * t * l;
+            float bottom = (632260 * m3 - 126452 * m2) * sub2 + 126452 * t;
             
-            Tuple2 tuple = {top1 / bottom, top2 / bottom};
+            vector_float2 float3 = {top1 / bottom, top2 / bottom};
             
-            NSUInteger lineNumber = channel * 2 + t;
-            ret[lineNumber] = tuple;
+            unsigned lineNumber = channel * 2 + t;
+            switch(lineNumber) {
+                case 0: ret.a = float3;
+                    break;
+                case 1: ret.b = float3;
+                    break;
+                case 2: ret.c = float3;
+                    break;
+                case 3: ret.d = float3;
+                    break;
+                case 4: ret.e = float3;
+                    break;
+                case 5: ret.f = float3;
+                    break;
+                default:
+                    break;
+            }
         }
     }
     return ret;
 }
 
-CGFloat intersectLineLine(Tuple2 line1, Tuple2 line2) {
-    return (line1.b - line2.b) / (line2.a - line1.a);
-}
-
-CGFloat distanceFromPole(CGPoint point) {
-    return sqrt(pow(point.x, 2) + pow(point.y, 2));
-}
-
-CGFloat lengthOfRayUntilIntersect(CGFloat theta, Tuple2 line) {
+float lengthOfRayUntilIntersect(float theta, vector_float2 line) {
     // theta  -- angle of ray starting at (0, 0)
     // m, b   -- slope and intercept of line
     // x1, y1 -- coordinates of intersection
@@ -117,84 +132,88 @@ CGFloat lengthOfRayUntilIntersect(CGFloat theta, Tuple2 line) {
     // b = len * (sin(hrad) - m * cos(hrad))
     // len = b / (sin(hrad) - m * cos(hrad))
     //
-    CGFloat m1 = line.a;
-    CGFloat b1 = line.b;
-    CGFloat len = b1 / (sin(theta) - m1 * cos(theta));
+    float m1 = line.x;
+    float b1 = line.y;
+    float len = b1 / (sin(theta) - m1 * cos(theta));
     //    if (len < 0) {
     //        return 0;
     //    }
     return len;
 }
 
+float intersectLineLine(vector_float2 line1, vector_float2 line2) {
+    return (line1.y - line2.y) / (line2.x - line1.x);
+}
+
+float distanceFromPole(vector_float2 point) {
+    return sqrt(pow(point.x, 2) + pow(point.y, 2));
+}
+
+vector_float2 lineAtIndex(LineBounds bounds, unsigned index) {
+    switch(index) {
+        case 0: return bounds.a;
+            break;
+        case 1: return bounds.b;
+            break;
+        case 2: return bounds.c;
+            break;
+        case 3: return bounds.d;
+            break;
+        case 4: return bounds.e;
+            break;
+        case 5: return bounds.f;
+            break;
+        default:
+            break;
+    }
+    return (vector_float2){0,0}; // Should never get here.
+}
+
 // For given lightness, returns the maximum chroma. Keeping the chroma value
 // below this number will ensure that for any hue, the color is within the RGB
 // gamut.
-CGFloat maxSafeChromaForL(CGFloat l)  {
-    CGFloat minLength = CGFLOAT_MAX;
-    Tuple2 *bounds = getBounds(l);
-    for (NSUInteger i = 0; i < 6; i++) {
-        Tuple2 boundTuple = bounds[i];
-
-        CGFloat m1 = boundTuple.a;
-        CGFloat b1 = boundTuple.b;
-
+float maxSafeChromaForL(float l)  {
+    float minLength = FLT_MAX;
+    LineBounds bounds = getBounds(l);
+    for (unsigned i = 0; i < 6; i++) {
+        vector_float2 boundfloat3 = lineAtIndex(bounds, i);
+        
+        float m1 = boundfloat3.x;
+        float b1 = boundfloat3.y;
+        
         // x where line intersects with perpendicular running though (0, 0)
-        Tuple2 line2 = {-1 / m1, 0};
-        CGFloat x = intersectLineLine(boundTuple, line2);
-        CGFloat distance = distanceFromPole(CGPointMake(x, b1 + x * m1));
-        if (distance >= 0) {
-            if (distance < minLength) {
-                minLength = distance;
+        vector_float2 line2 = (vector_float2){-1 / m1, 0};
+        float x = intersectLineLine(boundfloat3, line2);
+        float dist = distanceFromPole((vector_float2){x, b1 + x * m1});
+        if (dist >= 0) {
+            if (dist < minLength) {
+                minLength = dist;
             }
         }
     }
-    free(bounds);
     return minLength;
 }
 
 // For a given lightness and hue, return the maximum chroma that fits in
 // the RGB gamut.
-CGFloat maxChromaForLH(CGFloat l, CGFloat h) {
-    CGFloat hrad = h / 360 * M_PI * 2;
-    CGFloat minLength = CGFLOAT_MAX;
-    Tuple2 *bounds = getBounds(l);
-    for (NSUInteger i = 0; i < 6; i++) {
-        Tuple2 lineTuple = bounds[i];
-        CGFloat l = lengthOfRayUntilIntersect(hrad, lineTuple);
+float maxChromaForLH(float l, float h) {
+    float hrad = h / 360 * M_PI * 2;
+    float minLength = FLT_MAX;
+    LineBounds bounds = getBounds(l);
+    for (unsigned i = 0; i < 6; i++) {
+        vector_float2 linefloat3 = lineAtIndex(bounds, i);
+        float l = lengthOfRayUntilIntersect(hrad, linefloat3);
         if (l >= 0)  {
             if (l < minLength) {
                 minLength = l;
             }
         }
     }
-    free(bounds);
     return minLength;
 }
 
-
-
-CGFloat tupleDotProduct(Tuple t1, Tuple t2) {
-    CGFloat ret = 0.0;
-    for (NSUInteger i = 0; i < 3; i++) {
-        switch (i) {
-            case 0:
-                ret += t1.a * t2.a;
-                break;
-            case 1:
-                ret += t1.b * t2.b;
-                break;
-            case 2:
-                ret += t1.c * t2.c;
-                break;
-            default:
-                break;
-        }
-    }
-    return ret;
-}
-
 // Used for rgb conversions
-CGFloat fromLinear(CGFloat c) {
+float fromLinear(float c) {
     if (c <= 0.0031308) {
         return 12.92 * c;
     }
@@ -203,8 +222,8 @@ CGFloat fromLinear(CGFloat c) {
     }
 }
 
-CGFloat toLinear(CGFloat c) {
-    CGFloat a = 0.055;
+float toLinear(float c) {
+    float a = 0.055;
     if (c > 0.04045) {
         return pow((c + a) / (1 + a), 2.4);
     }
@@ -213,25 +232,33 @@ CGFloat toLinear(CGFloat c) {
     }
 }
 
-#pragma mark Conversion functions
+// Conversion functions
 
-Tuple xyzToRgb(Tuple xyz) {
-    CGFloat r = fromLinear(tupleDotProduct(m[0], xyz));
-    CGFloat g = fromLinear(tupleDotProduct(m[1], xyz));
-    CGFloat b = fromLinear(tupleDotProduct(m[2], xyz));
+vector_float3 xyzToRgb(vector_float3 xyz) {
+    float r = fromLinear(vector_dot(mR, xyz));
+    float g = fromLinear(vector_dot(mG, xyz));
+    float b = fromLinear(vector_dot(mB, xyz));
     
-    Tuple rgb = {r, g, b};
+    vector_float3 rgb = {r, g, b};
     return rgb;
 }
 
-Tuple rgbToXyz(Tuple rgb) {
-    Tuple rgbl = {toLinear(rgb.a), toLinear(rgb.b), toLinear(rgb.c)};
+//float dotProduct(vector_float3 m1, vector_float3 m2) {
+//    float product = 0;
+//    for (unsigned i = 0; i < 3; i++) {
+//        product += m1[i] * m2[i];
+//    }
+//    return product == 0.0 ? 0.5 : product;
+//}
 
-    CGFloat x = tupleDotProduct(m_inv[0], rgbl);
-    CGFloat y = tupleDotProduct(m_inv[1], rgbl);
-    CGFloat z = tupleDotProduct(m_inv[2], rgbl);
+vector_float3 rgbToXyz(vector_float3 rgb) {
+    vector_float3 rgbl = {toLinear(rgb.x), toLinear(rgb.y), toLinear(rgb.z)};
     
-    Tuple xyz = {x, y, z};
+    float x = vector_dot(m_invX, rgbl);
+    float y = vector_dot(m_invY, rgbl);
+    float z = vector_dot(m_invZ, rgbl);
+    
+    vector_float3 xyz = {x, y, z};
     return xyz;
 }
 
@@ -239,8 +266,8 @@ Tuple rgbToXyz(Tuple rgb) {
 // In these formulas, Yn refers to the reference white point. We are using
 // illuminant D65, so Yn (see refY in Maxima file) equals 1. The formula is
 // simplified accordingly.
-CGFloat yToL (CGFloat y) {
-    CGFloat l;
+float yToL (float y) {
+    float l;
     if (y <= epsilon) {
         l = y * kappa;
     }
@@ -250,166 +277,166 @@ CGFloat yToL (CGFloat y) {
     return l;
 }
 
-CGFloat lToY (CGFloat l) {
+float lToY (float l) {
     if (l <= 8) {
         return l / kappa;
     }
     else {
-        return powl((l + 16) / 116, 3);
+        return pow((l + 16) / 116, 3);
     }
 }
 
-Tuple xyzToLuv(Tuple xyz) {
-    CGFloat varU = (4 * xyz.a) / (xyz.a + (15 * xyz.b) + (3 * xyz.c));
-    CGFloat varV = (9 * xyz.b) / (xyz.a + (15 * xyz.b) + (3 * xyz.c));
-    CGFloat l = yToL(xyz.b);
+vector_float3 xyzToLuv(vector_float3 xyz) {
+    float varU = (4 * xyz.x) / (xyz.x + (15 * xyz.y) + (3 * xyz.z));
+    float varV = (9 * xyz.y) / (xyz.x + (15 * xyz.y) + (3 * xyz.z));
+    float l = yToL(xyz.y);
     // Black will create a divide-by-zero error
     if (l==0) {
-        Tuple luv = {0, 0, 0};
+        vector_float3 luv = {0, 0, 0};
         return luv;
     }
-    CGFloat u = 13 * l * (varU - refU);
-    CGFloat v = 13 * l * (varV - refV);
-    Tuple luv = {l, u, v};
+    float u = 13 * l * (varU - refU);
+    float v = 13 * l * (varV - refV);
+    vector_float3 luv = {l, u, v};
     return luv;
 }
 
-Tuple luvToXyz(Tuple luv) {
+vector_float3 luvToXyz(vector_float3 luv) {
     // Black will create a divide-by-zero error
-    if (luv.a == 0) {
-        Tuple xyz = {0, 0, 0};
+    if (luv.x == 0) {
+        vector_float3 xyz = {0, 0, 0};
         return xyz;
     }
-    CGFloat varU = luv.b / (13 * luv.a) + refU;
-    CGFloat varV = luv.c / (13 * luv.a) + refV;
-    CGFloat y = lToY(luv.a);
-    CGFloat x = 0 - (9 * y * varU) / ((varU - 4) * varV - varU * varV);
-    CGFloat z = (9 * y - (15 * varV * y) - (varV * x)) / (3 * varV);
-    Tuple xyz = {x, y, z};
+    float varU = luv.y / (13 * luv.x) + refU;
+    float varV = luv.z / (13 * luv.x) + refV;
+    float y = lToY(luv.x);
+    float x = 0 - (9 * y * varU) / ((varU - 4) * varV - varU * varV);
+    float z = (9 * y - (15 * varV * y) - (varV * x)) / (3 * varV);
+    vector_float3 xyz = {x, y, z};
     return xyz;
 }
 
-Tuple luvToLch(Tuple luv) {
-    CGFloat l = luv.a, u = luv.b, v = luv.c;
-    CGFloat h, c = sqrt(pow(u, 2) + pow(v, 2));
+vector_float3 luvToLch(vector_float3 luv) {
+    float l = luv.x, u = luv.y, v = luv.z;
+    float h, c = sqrt(pow(u, 2) + pow(v, 2));
     
     // Greys: disambiguate hue
     if (c < 0.00000001) {
         h = 0;
     }
     else {
-        CGFloat hrad = atan2(v, u);
+        float hrad = atan2(v, u);
         h = hrad * 360 / 2 / M_PI;
         if (h < 0) {
             h = 360 + h;
         }
     }
     
-    Tuple lch = {l, c, h};
+    vector_float3 lch = {l, c, h};
     return lch;
 }
 
-Tuple lchToLuv(Tuple lch) {
-    CGFloat hRad = lch.c / 360 * 2 * M_PI;
-    CGFloat u = cos(hRad) * lch.b;
-    CGFloat v = sin(hRad) * lch.b;
-    Tuple luv = {lch.a, u, v};
+vector_float3 lchToLuv(vector_float3 lch) {
+    float hRad = lch.z / 360 * 2 * M_PI;
+    float u = cos(hRad) * lch.y;
+    float v = sin(hRad) * lch.y;
+    vector_float3 luv = {lch.x, u, v};
     return luv;
 }
 
-CGFloat checkBorders(CGFloat channel) {
-    if (channel < 0) {
-        return 0;
+// HUSL
+vector_float3 huslToLch(vector_float3 husl) {
+    float h = husl.x, s = husl.y, l = husl.z, c;
+    
+    // White and black: disambiguate chroma
+    if (l > 99.9999999 || l < 0.00000001) {
+        c = 0;
     }
-    if (channel > 1) {
-        return 1;
+    else {
+        float max = maxChromaForLH(l, h);
+        c = max / 100 * s;
     }
-    return channel;
+    // Greys: disambiguate hue
+    if (s < 0.00000001) {
+        h = 0;
+    }
+    vector_float3 lch = {l, c, h};
+    return lch;
+}
+
+vector_float3 lchToHusl(vector_float3 lch) {
+    float l = lch.x, c = lch.y, h = lch.z, s;
+    
+    // White and black: disambiguate saturation
+    if (l > 99.9999999 || l < 0.00000001) {
+        s = 0;
+    }
+    else {
+        float max = maxChromaForLH(l, h);
+        s = c / max * 100;
+    }
+    // Greys: disambiguate hue
+    if (c < 0.00000001) {
+        h = 0;
+    }
+    vector_float3 husl = {h, s, l};
+    return husl;
+}
+
+vector_float3 vectorHuslToRgb(vector_float3 husl) {
+    vector_float3 rgb = xyzToRgb(luvToXyz(lchToLuv(huslToLch(husl))));
+    return rgb;
+}
+
+vector_float3 vectorRgbToHusl(vector_float3 rgb) {
+    vector_float3 husl = lchToHusl(luvToLch(xyzToLuv(rgbToXyz(rgb))));
+    return husl;
+}
+
+#pragma mark huslP
+vector_float3 huslpToLch(vector_float3 huslp) {
+    float h = huslp.x, s = huslp.y, l = huslp.z, c;
+    
+    // White and black: disambiguate chroma
+    if (l > 99.9999999 || l < 0.00000001) {
+        c = 0;
+    }
+    else {
+        CGFloat max = maxSafeChromaForL(l);
+        c = max / 100 * s;
+    }
+    
+    // Greys: disambiguate hue
+    if (s < 0.00000001) {
+        h = 0;
+    }
+    vector_float3 lch = {l, c, h};
+    return lch;
+}
+
+vector_float3 lchToHuslp(vector_float3 lch) {
+    float l = lch.x, c = lch.y, h = lch.z, s;
+    
+    // White and black: disambiguate saturation
+    if (l > 99.9999999 || l < 0.00000001) {
+        s = 0;
+    }
+    else {
+        CGFloat max = maxSafeChromaForL(l);
+        s = c / max * 100;
+    }
+    // Greys: disambiguate hue
+    if (c < 0.00000001) {
+        h = 0;
+    }
+    
+    vector_float3 huslp = {h, s, l};
+    return huslp;
 }
 
 BOOL hexToInt(NSString *hex, unsigned int *result) {
     NSScanner *scanner = [NSScanner scannerWithString:hex];
     return [scanner scanHexInt:result];
-}
-
-#pragma mark husl
-Tuple huslToLch(Tuple husl) {
-    CGFloat h = husl.a, s = husl.b, l = husl.c, c;
-
-    // White and black: disambiguate chroma
-    if (l > 99.9999999 || l < 0.00000001) {
-        c = 0;
-    }
-    else {
-        CGFloat max = maxChromaForLH(l, h);
-        c = max / 100 * s;
-    }
-    // Greys: disambiguate hue
-    if (s < 0.00000001) {
-        h = 0;
-    }
-    Tuple lch = {l, c, h};
-    return lch;
-}
-
-Tuple lchToHusl(Tuple lch) {
-    CGFloat l = lch.a, c = lch.b, h = lch.c, s;
-
-    // White and black: disambiguate saturation
-    if (l > 99.9999999 || l < 0.00000001) {
-        s = 0;
-    }
-    else {
-        CGFloat max = maxChromaForLH(l, h);
-        s = c / max * 100;
-    }
-    // Greys: disambiguate hue
-    if (c < 0.00000001) {
-        h = 0;
-    }
-    Tuple husl = {h, s, l};
-    return husl;
-}
-
-#pragma mark huslP
-Tuple huslpToLch(Tuple huslp) {
-    CGFloat h = huslp.a, s = huslp.b, l = huslp.c, c;
-
-    // White and black: disambiguate chroma
-    if (l > 99.9999999 || l < 0.00000001) {
-        c = 0;
-    }
-    else {
-        CGFloat max = maxSafeChromaForL(l);
-        c = max / 100 * s;
-    }
-    
-    // Greys: disambiguate hue
-    if (s < 0.00000001) {
-        h = 0;
-    }
-    Tuple lch = {l, c, h};
-    return lch;
-}
-
-Tuple lchToHuslp(Tuple lch) {
-    CGFloat l = lch.a, c = lch.b, h = lch.c, s;
-
-    // White and black: disambiguate saturation
-    if (l > 99.9999999 || l < 0.00000001) {
-        s = 0;
-    }
-    else {
-        CGFloat max = maxSafeChromaForL(l);
-        s = c / max * 100;
-    }
-    // Greys: disambiguate hue
-    if (c < 0.00000001) {
-        h = 0;
-    }
-    
-    Tuple huslp = {h, s, l};
-    return huslp;
 }
 
 CGFloat roundTo6decimals(CGFloat channel) {
@@ -470,41 +497,39 @@ BOOL hexToRgb(NSString *hex, CGFloat *red, CGFloat *green, CGFloat *blue) {
 }
 
 void huslToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
-    Tuple husl = {hue, saturation, lightness};
+    vector_float3 husl = {hue, saturation, lightness};
     
-    Tuple rgb = xyzToRgb(luvToXyz(lchToLuv(huslToLch(husl))));
+    vector_float3 rgb = vectorHuslToRgb(husl);
     
-    *red = rgb.a;
-    *green = rgb.b;
-    *blue = rgb.c;
+    *red = rgb.x;
+    *green = rgb.y;
+    *blue = rgb.z;
 }
 
 void rgbToHusl(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
-    Tuple rgb = {red, green, blue};
-    
-    Tuple husl = lchToHusl(luvToLch(xyzToLuv(rgbToXyz(rgb))));
-    
-    *hue = husl.a;
-    *saturation = husl.b;
-    *lightness = husl.c;
+    vector_float3 rgb = {red, green, blue};
+    vector_float3 husl = vectorRgbToHusl(rgb);
+    *hue = husl.x;
+    *saturation = husl.y;
+    *lightness = husl.z;
 }
 
 void huslpToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
-    Tuple huslp = {hue, saturation, lightness};
+    vector_float3 huslp = {hue, saturation, lightness};
     
-    Tuple rgb = xyzToRgb(luvToXyz(lchToLuv(huslpToLch(huslp))));
+    vector_float3 rgb = xyzToRgb(luvToXyz(lchToLuv(huslpToLch(huslp))));
     
-    *red = rgb.a;
-    *green = rgb.b;
-    *blue = rgb.c;
+    *red = rgb.x;
+    *green = rgb.y;
+    *blue = rgb.z;
 }
 
 void rgbToHuslp(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
-    Tuple rgb = {red, green, blue};
+    vector_float3 rgb = {red, green, blue};
     
-    Tuple huslp = lchToHuslp(luvToLch(xyzToLuv(rgbToXyz(rgb))));
+    vector_float3 huslp = lchToHuslp(luvToLch(xyzToLuv(rgbToXyz(rgb))));
     
-    *hue = huslp.a;
-    *saturation = huslp.b;
-    *lightness = huslp.c;
+    *hue = huslp.x;
+    *saturation = huslp.y;
+    *lightness = huslp.z;
 }

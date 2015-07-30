@@ -40,7 +40,8 @@ const NSString *kHuslp = @"huslp";
         [manySamples addObject:hex];
     }];
     
-    XCTAssert([self hexSamplesTester:manySamples usingPastelMode:NO], @"should convert between HUSL and hex");
+    BOOL passNoPastel = [self hexSamplesTester:manySamples usingPastelMode:NO];
+    XCTAssert(passNoPastel, @"should convert between HUSL and hex");
     XCTAssert([self hexSamplesTester:manySamples usingPastelMode:YES], @"should convert between HUSLp and hex");
 }
 
@@ -176,8 +177,8 @@ const NSString *kHuslp = @"huslp";
     }
 }
 
-- (NSArray *)tupleToArray:(Tuple) t {
-    return @[@(t.a), @(t.b), @(t.c)];
+- (NSArray *)tupleToArray:(vector_float3) t {
+    return @[@((double)t.x), @((double)t.y), @((double)t.z)];
 }
 
 - (NSDictionary *)snapshot {
@@ -186,8 +187,8 @@ const NSString *kHuslp = @"huslp";
     [self processSamples:^(NSString *hex) {
         CGFloat r, g, b;
         if (hexToRgb(hex, &r, &g, &b)) {
-            Tuple xyz, luv, lch, husl, huslp;
-            Tuple rgb = {r, g, b};
+            vector_float3 xyz, luv, lch, husl, huslp;
+            vector_float3 rgb = {r, g, b};
             xyz = rgbToXyz(rgb);
             luv = xyzToLuv(xyz);
             lch = luvToLch(luv);
