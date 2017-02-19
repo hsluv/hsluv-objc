@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		DB78AE941B4C733000F191CA /* snapshot-rev4.json in Resources */ = {isa = PBXBuildFile; fileRef = DB78AE931B4C733000F191CA /* snapshot-rev4.json */; };
-		DB9445681B208E670060C49C /* husl-objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB9445671B208E670060C49C /* husl-objc.h */; };
-		DB94456A1B208E680060C49C /* husl-objc.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9445691B208E680060C49C /* husl-objc.m */; };
-		DB9445701B208E680060C49C /* libhusl-objc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9445641B208E670060C49C /* libhusl-objc.a */; };
-		DB94457F1B20910D0060C49C /* HuslObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DB94457E1B20910D0060C49C /* HuslObjCTests.m */; };
+		DB9445681B208E670060C49C /* hsluv-objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB9445671B208E670060C49C /* hsluv-objc.h */; };
+		DB94456A1B208E680060C49C /* hsluv-objc.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9445691B208E680060C49C /* hsluv-objc.m */; };
+		DB9445701B208E680060C49C /* libhsluv-objc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9445641B208E670060C49C /* libhsluv-objc.a */; };
+		DB94457F1B20910D0060C49C /* HsluvObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DB94457E1B20910D0060C49C /* HsluvObjCTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,7 +20,7 @@
 			containerPortal = DB94455C1B208E670060C49C /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = DB9445631B208E670060C49C;
-			remoteInfo = "husl-objc";
+			remoteInfo = "hsluv-objc";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -31,7 +31,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				DB9445681B208E670060C49C /* husl-objc.h in CopyFiles */,
+				DB9445681B208E670060C49C /* hsluv-objc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,13 +39,13 @@
 
 /* Begin PBXFileReference section */
 		DB78AE931B4C733000F191CA /* snapshot-rev4.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "snapshot-rev4.json"; sourceTree = "<group>"; };
-		DB86C3C61B2243230086C007 /* husl-objc+Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl-objc+Test.h"; sourceTree = "<group>"; };
-		DB9445641B208E670060C49C /* libhusl-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libhusl-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DB9445671B208E670060C49C /* husl-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "husl-objc.h"; sourceTree = "<group>"; };
-		DB9445691B208E680060C49C /* husl-objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "husl-objc.m"; sourceTree = "<group>"; };
-		DB94456F1B208E680060C49C /* husl-objcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "husl-objcTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB86C3C61B2243230086C007 /* hsluv-objc+Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "hsluv-objc+Test.h"; sourceTree = "<group>"; };
+		DB9445641B208E670060C49C /* libhsluv-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libhsluv-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB9445671B208E670060C49C /* hsluv-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "hsluv-objc.h"; sourceTree = "<group>"; };
+		DB9445691B208E680060C49C /* hsluv-objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "hsluv-objc.m"; sourceTree = "<group>"; };
+		DB94456F1B208E680060C49C /* hsluv-objcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "hsluv-objcTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB9445751B208E680060C49C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DB94457E1B20910D0060C49C /* HuslObjCTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HuslObjCTests.m; sourceTree = "<group>"; };
+		DB94457E1B20910D0060C49C /* HsluvObjCTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HsluvObjCTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB9445701B208E680060C49C /* libhusl-objc.a in Frameworks */,
+				DB9445701B208E680060C49C /* libhsluv-objc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,8 +70,8 @@
 		DB94455B1B208E670060C49C = {
 			isa = PBXGroup;
 			children = (
-				DB9445661B208E670060C49C /* husl-objc */,
-				DB9445731B208E680060C49C /* husl-objcTests */,
+				DB9445661B208E670060C49C /* hsluv-objc */,
+				DB9445731B208E680060C49C /* hsluv-objcTests */,
 				DB9445651B208E670060C49C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,29 +79,29 @@
 		DB9445651B208E670060C49C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DB9445641B208E670060C49C /* libhusl-objc.a */,
-				DB94456F1B208E680060C49C /* husl-objcTests.xctest */,
+				DB9445641B208E670060C49C /* libhsluv-objc.a */,
+				DB94456F1B208E680060C49C /* hsluv-objcTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		DB9445661B208E670060C49C /* husl-objc */ = {
+		DB9445661B208E670060C49C /* hsluv-objc */ = {
 			isa = PBXGroup;
 			children = (
-				DB9445671B208E670060C49C /* husl-objc.h */,
-				DB9445691B208E680060C49C /* husl-objc.m */,
-				DB86C3C61B2243230086C007 /* husl-objc+Test.h */,
+				DB9445671B208E670060C49C /* hsluv-objc.h */,
+				DB9445691B208E680060C49C /* hsluv-objc.m */,
+				DB86C3C61B2243230086C007 /* hsluv-objc+Test.h */,
 			);
-			path = "husl-objc";
+			path = "hsluv-objc";
 			sourceTree = "<group>";
 		};
-		DB9445731B208E680060C49C /* husl-objcTests */ = {
+		DB9445731B208E680060C49C /* hsluv-objcTests */ = {
 			isa = PBXGroup;
 			children = (
 				DB9445741B208E680060C49C /* Supporting Files */,
-				DB94457E1B20910D0060C49C /* HuslObjCTests.m */,
+				DB94457E1B20910D0060C49C /* HsluvObjCTests.m */,
 			);
-			path = "husl-objcTests";
+			path = "hsluv-objcTests";
 			sourceTree = "<group>";
 		};
 		DB9445741B208E680060C49C /* Supporting Files */ = {
@@ -116,9 +116,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DB9445631B208E670060C49C /* husl-objc */ = {
+		DB9445631B208E670060C49C /* hsluv-objc */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DB9445781B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objc" */;
+			buildConfigurationList = DB9445781B208E680060C49C /* Build configuration list for PBXNativeTarget "hsluv-objc" */;
 			buildPhases = (
 				DB9445601B208E670060C49C /* Sources */,
 				DB9445611B208E670060C49C /* Frameworks */,
@@ -128,14 +128,14 @@
 			);
 			dependencies = (
 			);
-			name = "husl-objc";
-			productName = "husl-objc";
-			productReference = DB9445641B208E670060C49C /* libhusl-objc.a */;
+			name = "hsluv-objc";
+			productName = "hsluv-objc";
+			productReference = DB9445641B208E670060C49C /* libhsluv-objc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		DB94456E1B208E680060C49C /* husl-objcTests */ = {
+		DB94456E1B208E680060C49C /* hsluv-objcTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DB94457B1B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objcTests" */;
+			buildConfigurationList = DB94457B1B208E680060C49C /* Build configuration list for PBXNativeTarget "hsluv-objcTests" */;
 			buildPhases = (
 				DB94456B1B208E680060C49C /* Sources */,
 				DB94456C1B208E680060C49C /* Frameworks */,
@@ -146,9 +146,9 @@
 			dependencies = (
 				DB9445721B208E680060C49C /* PBXTargetDependency */,
 			);
-			name = "husl-objcTests";
-			productName = "husl-objcTests";
-			productReference = DB94456F1B208E680060C49C /* husl-objcTests.xctest */;
+			name = "hsluv-objcTests";
+			productName = "hsluv-objcTests";
+			productReference = DB94456F1B208E680060C49C /* hsluv-objcTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -168,7 +168,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DB94455F1B208E670060C49C /* Build configuration list for PBXProject "husl-objc" */;
+			buildConfigurationList = DB94455F1B208E670060C49C /* Build configuration list for PBXProject "hsluv-objc" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -180,8 +180,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DB9445631B208E670060C49C /* husl-objc */,
-				DB94456E1B208E680060C49C /* husl-objcTests */,
+				DB9445631B208E670060C49C /* hsluv-objc */,
+				DB94456E1B208E680060C49C /* hsluv-objcTests */,
 			);
 		};
 /* End PBXProject section */
@@ -202,7 +202,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB94456A1B208E680060C49C /* husl-objc.m in Sources */,
+				DB94456A1B208E680060C49C /* hsluv-objc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,7 +210,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB94457F1B20910D0060C49C /* HuslObjCTests.m in Sources */,
+				DB94457F1B20910D0060C49C /* HsluvObjCTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,7 +219,7 @@
 /* Begin PBXTargetDependency section */
 		DB9445721B208E680060C49C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DB9445631B208E670060C49C /* husl-objc */;
+			target = DB9445631B208E670060C49C /* hsluv-objc */;
 			targetProxy = DB9445711B208E680060C49C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -338,7 +338,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "husl-objcTests/Info.plist";
+				INFOPLIST_FILE = "hsluv-objcTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Roger-Tallada.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -353,7 +353,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "husl-objcTests/Info.plist";
+				INFOPLIST_FILE = "hsluv-objcTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Roger-Tallada.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -363,7 +363,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DB94455F1B208E670060C49C /* Build configuration list for PBXProject "husl-objc" */ = {
+		DB94455F1B208E670060C49C /* Build configuration list for PBXProject "hsluv-objc" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DB9445761B208E680060C49C /* Debug */,
@@ -372,7 +372,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DB9445781B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objc" */ = {
+		DB9445781B208E680060C49C /* Build configuration list for PBXNativeTarget "hsluv-objc" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DB9445791B208E680060C49C /* Debug */,
@@ -381,7 +381,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DB94457B1B208E680060C49C /* Build configuration list for PBXNativeTarget "husl-objcTests" */ = {
+		DB94457B1B208E680060C49C /* Build configuration list for PBXNativeTarget "hsluv-objcTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DB94457C1B208E680060C49C /* Debug */,

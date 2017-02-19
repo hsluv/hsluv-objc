@@ -1,16 +1,16 @@
 //
-//  husl_objc.m
-//  husl-objc
+//  hsluv_objc.m
+//  hsluv-objc
 //
 //  Created by Roger Tallada on 4/6/15.
 //  Copyright (c) 2015 Alexei Boronine
 //
-// Implementation of husl translated from husl.coffee
+// Implementation of hsluv translated from hsluv.coffee
 
 
 #import <tgmath.h>
-#import "husl-objc.h"
-#import "husl-objc+Test.h"
+#import "hsluv-objc.h"
+#import "hsluv-objc+Test.h"
 
 #pragma mark Private funcions
 
@@ -332,9 +332,9 @@ BOOL hexToInt(NSString *hex, unsigned int *result) {
     return [scanner scanHexInt:result];
 }
 
-#pragma mark husl
-Tuple huslToLch(Tuple husl) {
-    CGFloat h = husl.a, s = husl.b, l = husl.c, c;
+#pragma mark hsluv
+Tuple hsluvToLch(Tuple hsluv) {
+    CGFloat h = hsluv.a, s = hsluv.b, l = hsluv.c, c;
 
     // White and black: disambiguate chroma
     if (l > 99.9999999 || l < 0.00000001) {
@@ -352,7 +352,7 @@ Tuple huslToLch(Tuple husl) {
     return lch;
 }
 
-Tuple lchToHusl(Tuple lch) {
+Tuple lchToHsluv(Tuple lch) {
     CGFloat l = lch.a, c = lch.b, h = lch.c, s;
 
     // White and black: disambiguate saturation
@@ -367,13 +367,13 @@ Tuple lchToHusl(Tuple lch) {
     if (c < 0.00000001) {
         h = 0;
     }
-    Tuple husl = {h, s, l};
-    return husl;
+    Tuple hsluv = {h, s, l};
+    return hsluv;
 }
 
-#pragma mark huslP
-Tuple huslpToLch(Tuple huslp) {
-    CGFloat h = huslp.a, s = huslp.b, l = huslp.c, c;
+#pragma mark hsluvP
+Tuple hpluvToLch(Tuple hpluv) {
+    CGFloat h = hpluv.a, s = hpluv.b, l = hpluv.c, c;
 
     // White and black: disambiguate chroma
     if (l > 99.9999999 || l < 0.00000001) {
@@ -392,7 +392,7 @@ Tuple huslpToLch(Tuple huslp) {
     return lch;
 }
 
-Tuple lchToHuslp(Tuple lch) {
+Tuple lchToHpluv(Tuple lch) {
     CGFloat l = lch.a, c = lch.b, h = lch.c, s;
 
     // White and black: disambiguate saturation
@@ -408,8 +408,8 @@ Tuple lchToHuslp(Tuple lch) {
         h = 0;
     }
     
-    Tuple huslp = {h, s, l};
-    return huslp;
+    Tuple hpluv = {h, s, l};
+    return hpluv;
 }
 
 CGFloat roundTo6decimals(CGFloat channel) {
@@ -469,42 +469,42 @@ BOOL hexToRgb(NSString *hex, CGFloat *red, CGFloat *green, CGFloat *blue) {
     return NO;
 }
 
-void huslToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
-    Tuple husl = {hue, saturation, lightness};
+void hsluvToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
+    Tuple hsluv = {hue, saturation, lightness};
     
-    Tuple rgb = xyzToRgb(luvToXyz(lchToLuv(huslToLch(husl))));
-    
-    *red = rgb.a;
-    *green = rgb.b;
-    *blue = rgb.c;
-}
-
-void rgbToHusl(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
-    Tuple rgb = {red, green, blue};
-    
-    Tuple husl = lchToHusl(luvToLch(xyzToLuv(rgbToXyz(rgb))));
-    
-    *hue = husl.a;
-    *saturation = husl.b;
-    *lightness = husl.c;
-}
-
-void huslpToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
-    Tuple huslp = {hue, saturation, lightness};
-    
-    Tuple rgb = xyzToRgb(luvToXyz(lchToLuv(huslpToLch(huslp))));
+    Tuple rgb = xyzToRgb(luvToXyz(lchToLuv(hsluvToLch(hsluv))));
     
     *red = rgb.a;
     *green = rgb.b;
     *blue = rgb.c;
 }
 
-void rgbToHuslp(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
+void rgbToHsluv(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
     Tuple rgb = {red, green, blue};
     
-    Tuple huslp = lchToHuslp(luvToLch(xyzToLuv(rgbToXyz(rgb))));
+    Tuple hsluv = lchToHsluv(luvToLch(xyzToLuv(rgbToXyz(rgb))));
     
-    *hue = huslp.a;
-    *saturation = huslp.b;
-    *lightness = huslp.c;
+    *hue = hsluv.a;
+    *saturation = hsluv.b;
+    *lightness = hsluv.c;
+}
+
+void hpluvToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red, CGFloat *green, CGFloat *blue) {
+    Tuple hpluv = {hue, saturation, lightness};
+    
+    Tuple rgb = xyzToRgb(luvToXyz(lchToLuv(hpluvToLch(hpluv))));
+    
+    *red = rgb.a;
+    *green = rgb.b;
+    *blue = rgb.c;
+}
+
+void rgbToHpluv(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness) {
+    Tuple rgb = {red, green, blue};
+    
+    Tuple hpluv = lchToHpluv(luvToLch(xyzToLuv(rgbToXyz(rgb))));
+    
+    *hue = hpluv.a;
+    *saturation = hpluv.b;
+    *lightness = hpluv.c;
 }
