@@ -116,7 +116,7 @@ const NSString *kHpluv = @"hpluv";
 #pragma mark Helper methods
 
 - (BOOL)compareComponents:(NSArray *)tuple1 with:(NSArray *)tuple2 {
-    CGFloat snapshotTolerance = 0.00000000001;
+    CGFloat snapshotTolerance = 0.00000001;
     if (tuple1.count != tuple2.count || tuple1.count != 3) {
         return NO;
     }
