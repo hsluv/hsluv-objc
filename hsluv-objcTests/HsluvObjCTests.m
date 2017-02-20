@@ -1,27 +1,27 @@
 //
-//  HuslObjCTests.m
-//  husl-objc
+//  HsluvObjCTests.m
+//  hsluv-objc
 //
 //  Created by Roger Tallada on 4/6/15.
 //  Copyright (c) 2015 Alexei Boronine
 //
 
 #import <XCTest/XCTest.h>
-#import "husl-objc.h"
-#import "husl-objc+Test.h"
+#import "hsluv-objc.h"
+#import "hsluv-objc+Test.h"
 
-@interface HuslObjCTests : XCTestCase
+@interface HsluvObjCTests : XCTestCase
 
 @end
 
-@implementation HuslObjCTests
+@implementation HsluvObjCTests
 
 const NSString *kRgb = @"rgb";
 const NSString *kXyz = @"xyz";
 const NSString *kLuv = @"luv";
 const NSString *kLch = @"lch";
-const NSString *kHusl = @"husl";
-const NSString *kHuslp = @"huslp";
+const NSString *kHsluv = @"hsluv";
+const NSString *kHpluv = @"hpluv";
 
 - (void)setUp {
     [super setUp];
@@ -33,15 +33,15 @@ const NSString *kHuslp = @"huslp";
     [super tearDown];
 }
 
-- (void)testHuslConsistency {
+- (void)testHsluvConsistency {
     NSMutableArray *manySamples = [NSMutableArray array];
     
     [self processSamples:^(NSString *hex) {
         [manySamples addObject:hex];
     }];
     
-    XCTAssert([self hexSamplesTester:manySamples usingPastelMode:NO], @"should convert between HUSL and hex");
-    XCTAssert([self hexSamplesTester:manySamples usingPastelMode:YES], @"should convert between HUSLp and hex");
+    XCTAssert([self hexSamplesTester:manySamples usingPastelMode:NO], @"should convert between HSLuv and hex");
+    XCTAssert([self hexSamplesTester:manySamples usingPastelMode:YES], @"should convert between HPLuv and hex");
 }
 
 - (void)testFitsWithinRGBRanges {
@@ -51,15 +51,15 @@ const NSString *kHuslp = @"huslp";
         for (CGFloat s = 0; s < 100; s = s + 5) {
             for (CGFloat l = 0; l < 100; l = l + 5) {
                 CGFloat r, g, b;
-                huslToRgb(h, s, l, &r, &g, &b);
-                XCTAssert(-rgbRangeTolerance <= r && r <= 1 + rgbRangeTolerance, @"HUSL testFitsWithinRGBRanges");
-                XCTAssert(-rgbRangeTolerance <= g && g <= 1 + rgbRangeTolerance, @"HUSL testFitsWithinRGBRanges");
-                XCTAssert(-rgbRangeTolerance <= b && b <= 1 + rgbRangeTolerance, @"HUSL testFitsWithinRGBRanges");
+                hsluvToRgb(h, s, l, &r, &g, &b);
+                XCTAssert(-rgbRangeTolerance <= r && r <= 1 + rgbRangeTolerance, @"HSLuv testFitsWithinRGBRanges");
+                XCTAssert(-rgbRangeTolerance <= g && g <= 1 + rgbRangeTolerance, @"HSLuv testFitsWithinRGBRanges");
+                XCTAssert(-rgbRangeTolerance <= b && b <= 1 + rgbRangeTolerance, @"HSLuv testFitsWithinRGBRanges");
 
-                huslpToRgb(h, s, l, &r, &g, &b);
-                XCTAssert(-rgbRangeTolerance <= r && r <= 1 + rgbRangeTolerance, @"HUSLp testFitsWithinRGBRanges");
-                XCTAssert(-rgbRangeTolerance <= g && g <= 1 + rgbRangeTolerance, @"HUSLp testFitsWithinRGBRanges");
-                XCTAssert(-rgbRangeTolerance <= b && b <= 1 + rgbRangeTolerance, @"HUSLp testFitsWithinRGBRanges");
+                hpluvToRgb(h, s, l, &r, &g, &b);
+                XCTAssert(-rgbRangeTolerance <= r && r <= 1 + rgbRangeTolerance, @"HPLuv testFitsWithinRGBRanges");
+                XCTAssert(-rgbRangeTolerance <= g && g <= 1 + rgbRangeTolerance, @"HPLuv testFitsWithinRGBRanges");
+                XCTAssert(-rgbRangeTolerance <= b && b <= 1 + rgbRangeTolerance, @"HPLuv testFitsWithinRGBRanges");
             }
         }
     }
@@ -116,7 +116,7 @@ const NSString *kHuslp = @"huslp";
 #pragma mark Helper methods
 
 - (BOOL)compareComponents:(NSArray *)tuple1 with:(NSArray *)tuple2 {
-    CGFloat snapshotTolerance = 0.00000000001;
+    CGFloat snapshotTolerance = 0.00000001;
     if (tuple1.count != tuple2.count || tuple1.count != 3) {
         return NO;
     }
@@ -134,32 +134,32 @@ const NSString *kHuslp = @"huslp";
 }
 
 - (BOOL)hexSamplesTester:(NSArray *)manySamples usingPastelMode:(BOOL)pMode {
-    BOOL huslToHexOk = YES;
+    BOOL hsluvToHexOk = YES;
     for (NSString *hex in manySamples) {
         CGFloat r, g, b;
         if (hexToRgb(hex, &r, &g, &b)) {
             CGFloat h, s, l;
             if (!pMode) {
-                rgbToHusl(r, g, b, &h, &s, &l);
-                huslToRgb(h, s, l, &r, &g, &b);
+                rgbToHsluv(r, g, b, &h, &s, &l);
+                hsluvToRgb(h, s, l, &r, &g, &b);
             }
             else {
-                rgbToHuslp(r, g, b, &h, &s, &l);
-                huslpToRgb(h, s, l, &r, &g, &b);
+                rgbToHpluv(r, g, b, &h, &s, &l);
+                hpluvToRgb(h, s, l, &r, &g, &b);
             }
             NSString *newHex = rgbToHex(r, g, b);
             if (![newHex isEqualToString:hex]) {
-                huslToHexOk = NO;
+                hsluvToHexOk = NO;
                 NSLog(@"%@ -> %@", hex, newHex);
                 break;
             }
         }
         else {
-            huslToHexOk = NO;
+            hsluvToHexOk = NO;
             break;
         }
     }
-    return huslToHexOk;
+    return hsluvToHexOk;
 }
 
 - (void)processSamples:(void (^)(NSString *hex))function {
@@ -186,21 +186,21 @@ const NSString *kHuslp = @"huslp";
     [self processSamples:^(NSString *hex) {
         CGFloat r, g, b;
         if (hexToRgb(hex, &r, &g, &b)) {
-            Tuple xyz, luv, lch, husl, huslp;
+            Tuple xyz, luv, lch, hsluv, hpluv;
             Tuple rgb = {r, g, b};
             xyz = rgbToXyz(rgb);
             luv = xyzToLuv(xyz);
             lch = luvToLch(luv);
-            husl = lchToHusl(lch);
-            huslp = lchToHuslp(lch);
+            hsluv = lchToHsluv(lch);
+            hpluv = lchToHpluv(lch);
 
             NSMutableDictionary *sample = [NSMutableDictionary dictionary];
             sample[kRgb] = [self tupleToArray:rgb];
             sample[kXyz] = [self tupleToArray:xyz];
             sample[kLuv] = [self tupleToArray:luv];
             sample[kLch] = [self tupleToArray:lch];
-            sample[kHusl] = [self tupleToArray:husl];
-            sample[kHuslp] = [self tupleToArray:huslp];
+            sample[kHsluv] = [self tupleToArray:hsluv];
+            sample[kHpluv] = [self tupleToArray:hpluv];
             
             samples[hex] = sample;
         }

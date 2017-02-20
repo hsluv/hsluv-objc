@@ -1,22 +1,17 @@
-#hsluv-objc
+//
+//  hsluv_objc.h
+//  hsluv-objc
+//
+//  Created by Roger Tallada on 4/6/15.
+//  Copyright (c) 2015 Alexei Boronine
+//
 
-Objective-C port of [HSLuv](http://www.hsluv.org).
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 
-##Which files are needed?
+#ifndef hsluv_objc_h
+#define hsluv_objc_h
 
-If you're using [CocoaPods](https://cocoapods.org) just add `pod 'hsluv-objc'` to your Podfile.
-
-Otherwise, include this files in your project:
-
-- hsluv-objc.h
-- hsluv-objc+Tests.h
-- hsluv-objc.c
-
-##How to use
-
-Import `hsluv-objc.h`, which defines the following functions:
-
-~~~objective-c
 // Accepts red, green and blue values between 0 and 1, returns the color in hex format, as in "#012C4A"
 NSString *rgbToHex(CGFloat red, CGFloat green, CGFloat blue);
 
@@ -34,4 +29,5 @@ void hpluvToRgb(CGFloat hue, CGFloat saturation, CGFloat lightness, CGFloat *red
 
 // Red, green and blue values between 0 and 1, stores the hpluv components with hue between 0 and 360, saturation and lightness between 0 and 100.
 void rgbToHpluv(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness);
-~~~
+
+#endif

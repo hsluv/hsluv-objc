@@ -1,0 +1,4 @@
+language: objective-c
+osx_image: xcode8.2
+script:
+  - xcodebuild -scheme "hsluv-objc" -destination "arch=x86_64" CODE_SIGNING_REQUIRED=NO test
