@@ -1,3 +1,6 @@
+[![Cocoapod compatible](https://img.shields.io/cocoapods/v/hsluv-objc.svg)](https://cocoapods.org/pods/hsluv-objc)
+[![Build Status](https://travis-ci.org/hsluv/hsluv-objc.svg?branch=master)](https://travis-ci.org/hsluv/hsluv-objc)
+
 #hsluv-objc
 
 Objective-C port of [HSLuv](http://www.hsluv.org).
