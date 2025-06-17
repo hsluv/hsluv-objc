@@ -1,5 +1,5 @@
 [![Cocoapod compatible](https://img.shields.io/cocoapods/v/hsluv-objc.svg)](https://cocoapods.org/pods/hsluv-objc)
-[![Build Status](https://travis-ci.org/hsluv/hsluv-objc.svg?branch=master)](https://travis-ci.org/hsluv/hsluv-objc)
+[![CI](https://github.com/hsluv/hsluv-objc/actions/workflows/ci.yml/badge.svg)](https://github.com/hsluv/hsluv-objc/actions/workflows/ci.yml)
 
 #hsluv-objc
 
